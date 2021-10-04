@@ -20,6 +20,9 @@ class Server:
         self.init_params()
         self.training_clients = {}
         self.status = ServerStatus.IDLE
+        self.learning_rate = 1.
+        self.epochs = 20
+        self.batch_size = 256
 
     def init_params(self):
         if self.mnist_model_params is None:
@@ -39,10 +42,12 @@ class Server:
             federated_learning_config = None
             if training_type == TrainingType.MNIST:
                 request_body = model_params_to_request_params(training_type, self.mnist_model_params)
-                federated_learning_config = FederatedLearningConfig(learning_rate=1., epochs=20, batch_size=256)
+                # federated_learning_config = FederatedLearningConfig(learning_rate=1., epochs=20, batch_size=256)
+                federated_learning_config = FederatedLearningConfig(self.learning_rate, self.epochs, self.batch_size)
             elif training_type == TrainingType.CHEST_X_RAY_PNEUMONIA:
                 request_body = model_params_to_request_params(training_type, self.chest_x_ray_model_params)
-                federated_learning_config = FederatedLearningConfig(learning_rate=0.0001, epochs=1, batch_size=2)
+                # federated_learning_config = FederatedLearningConfig(learning_rate=0.0001, epochs=1, batch_size=2)
+                federated_learning_config = FederatedLearningConfig(self.learning_rate, self.epochs, self.batch_size)
 
             request_body['learning_rate'] = federated_learning_config.learning_rate
             request_body['epochs'] = federated_learning_config.epochs
@@ -138,3 +143,7 @@ class Server:
 
         return True
 
+    def set_epochs_lr_batchsize(self,epochs,lr,batchsize):
+        self.epochs = epochs
+        self.learning_rate = lr
+        self.batch_size = batchsize

@@ -30,7 +30,7 @@ class ChestXRayModelTrainer:
             Flatten(),
             Dense(units=2, activation='softmax')
         ])
-        model.summary()
+        #model.summary()
 
         model.compile(optimizer=Adam(learning_rate=self.client_config.learning_rate), loss='categorical_crossentropy', metrics=['accuracy'])
         if self.model_params is not None:
