@@ -144,6 +144,6 @@ class Server:
         return True
 
     def set_epochs_lr_batchsize(self,epochs,lr,batchsize):
-        self.epochs = epochs
-        self.learning_rate = lr
-        self.batch_size = batchsize
+        self.epochs = int(epochs)
+        self.learning_rate = float(lr)
+        self.batch_size = int(batchsize)
