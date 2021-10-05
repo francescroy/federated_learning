@@ -20,7 +20,6 @@ def model_params_to_request_params(training_type, model_params):
     else:
         raise ValueError('Unsupported training type', training_type)
 
-
 def request_params_to_model_params(training_type, request_data):
     model_params = None
     if training_type == TrainingType.MNIST:
@@ -31,12 +30,27 @@ def request_params_to_model_params(training_type, request_data):
         if 'weights' in request_data:
             weights_array = []
             weights_received = request_data['weights']
+
+            print("()()()()()()()()()()()")
+            print(type(weights_received))
+            print("()()()()()()()()()()()")
+            print(len(weights_received))
+            print("()()()()()()()()()()()")
+
             print('Weights received length:', len(weights_received))
             for weights in weights_received:
                 numpy_weights_array = np.array(weights)
                 print('model weights SHAPE:', numpy_weights_array.shape)
                 weights_array.append(np.array(weights))
             model_params = weights_array
+
+            print("()()()()()()()()()()()")
+            print(type(model_params))
+            print("()()()()()()()()()()()")
+            model_params= np.array(model_params)
+            print(model_params.shape)
+            print("()()()()()()()()()()()")
+
         else:
             print('No weights found in the request')
             return None
