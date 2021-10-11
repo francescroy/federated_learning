@@ -1,0 +1,26 @@
+
+
+$ mkdir myproject
+$ cd myproject
+$ python3 -m venv venv
+
+
+$ . venv/bin/activate
+
+$ deactivate
+
+
+$ export FLASK_APP=hello
+
+$ export FLASK_ENV=development
+
+$ flask run OR python3 -m flask run
+
+$ flask run --host=0.0.0.0 //igual també es podria com a environment variable...?
+
+$ També pots posar totes les env.variables a un fitxer... .flaskenv
+
+
+curl -d "epochs=30&lr=0.1&batchsize=256" -X POST http://localhost:5000/set_epochs_lr_batchsize
+
+

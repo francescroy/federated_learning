@@ -43,10 +43,10 @@ class ChestXRayModelTrainer:
         train_batches, valid_batches = self.__load_datasets()
 
         model.fit(x=train_batches,
-                  steps_per_epoch=10,
+                  steps_per_epoch=10, ### aaaaah okay.
                   epochs=self.client_config.epochs,
                   validation_data=valid_batches,
-                  validation_steps=5,
+                  validation_steps=5, ### aaaaah okay.
                   verbose=2)
 
         self.__clean_temp_dataset_folder()
@@ -103,4 +103,4 @@ class ChestXRayModelTrainer:
                 shutil.copy(random_file, training_dataset_path + '/' + a_class)
 
 
-chestXRayModelTrainer = ChestXRayModelTrainer(None, None)
+#chestXRayModelTrainer = ChestXRayModelTrainer(None, None)
