@@ -46,3 +46,5 @@ model.fit(x=train_batches,
             #validation_steps=5, ### aaaaah okay.
             #verbose=2
           )
+
+#### provaaaaaa
