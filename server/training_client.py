@@ -6,6 +6,9 @@ class TrainingClient:
         self.client_url = client_url
         self.status = ClientTrainingStatus.IDLE
         self.model_params = None
+        self.learning_rate = None
+        self.epochs = None
+        self.batch_size = None
 
     def __str__(self):
         return "Training client:\n--Client URL: {}\n--Status: {}\n".format(

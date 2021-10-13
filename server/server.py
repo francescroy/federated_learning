@@ -63,6 +63,13 @@ class Server:
         sys.stdout.flush()
 
     async def do_training_client_request(self, training_type, training_client, request_body):
+
+        # Let's change the learning rate, epochs and batch size (on the request body) only for those clients that have specific quantities set for these values:
+        if training_client.learning_rate is not None and training_client.epochs is not None and training_client.batch_size is not None:
+            request_body['learning_rate'] = training_client.learning_rate
+            request_body['epochs'] = training_client.epochs
+            request_body['batch_size'] = training_client.batch_size
+
         request_url = training_client.client_url + '/training'
         print('Requesting training to client', request_url)
         async with aiohttp.ClientSession() as session:
@@ -144,6 +151,13 @@ class Server:
         return True
 
     def set_epochs_lr_batchsize(self,epochs,lr,batchsize):
-        self.epochs = int(epochs)
-        self.learning_rate = float(lr)
-        self.batch_size = int(batchsize)
+        self.epochs = int(epochs.strip())
+        self.learning_rate = float(lr.strip())
+        self.batch_size = int(batchsize.strip())
+
+    def set_epochs_lr_batchsize_for_client(self, epochs, lr, batchsize, clienturl):
+        for training_client in self.training_clients.values():
+            if training_client.client_url == clienturl.strip():
+                training_client.epochs = int(epochs.strip())
+                training_client.learning_rate = float(lr.strip())
+                training_client.batch_size = int(batchsize.strip())

@@ -14,21 +14,10 @@ def model_params_to_request_params(training_type, model_params):
     elif training_type == TrainingType.CHEST_X_RAY_PNEUMONIA:
         weights_array = []
 
-        print("()()()()()()()()()()()")
-        print(type(model_params))
-        print("()()()()()()()()()()()")
-        print(model_params.shape)
-        print("()()()()()()()()()()()")
-
         for i, weights in enumerate(model_params):
             print('model params SHAPE:', weights.shape)
             weights_array.append(np.array(weights).tolist())
 
-        print("()()()()()()()()()()()")
-        print(type(weights_array))
-        print("()()()()()()()()()()()")
-        print(len(weights_array))  
-        print("()()()()()()()()()()()")
 
         return {'weights': weights_array}
     else:

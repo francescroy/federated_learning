@@ -43,10 +43,10 @@ class ChestXRayModelTrainer:
         train_batches, valid_batches = self.__load_datasets()
 
         model.fit(x=train_batches,
-                  steps_per_epoch=10, ### aaaaah okay.
+                  #steps_per_epoch=10, ### aaaaah okay.
                   epochs=self.client_config.epochs,
                   validation_data=valid_batches,
-                  validation_steps=5, ### aaaaah okay.
+                  #validation_steps=5, ### aaaaah okay.
                   verbose=2)
 
         self.__clean_temp_dataset_folder()

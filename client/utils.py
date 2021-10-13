@@ -31,12 +31,6 @@ def request_params_to_model_params(training_type, request_data):
             weights_array = []
             weights_received = request_data['weights']
 
-            print("()()()()()()()()()()()")
-            print(type(weights_received))
-            print("()()()()()()()()()()()")
-            print(len(weights_received))
-            print("()()()()()()()()()()()")
-
             print('Weights received length:', len(weights_received))
             for weights in weights_received:
                 numpy_weights_array = np.array(weights)
@@ -44,12 +38,7 @@ def request_params_to_model_params(training_type, request_data):
                 weights_array.append(np.array(weights))
             model_params = weights_array
 
-            print("()()()()()()()()()()()")
-            print(type(model_params))
-            print("()()()()()()()()()()()")
-            model_params= np.array(model_params)
-            print(model_params.shape)
-            print("()()()()()()()()()()()")
+            #model_params= np.array(model_params)
 
         else:
             print('No weights found in the request')

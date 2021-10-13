@@ -74,4 +74,9 @@ def create_app(test_config=None):
         server.set_epochs_lr_batchsize(request.form['epochs'],request.form['lr'],request.form['batchsize'])
         return Response(status=200)
 
+    @app.route('/set_epochs_lr_batchsize_for_client', methods=['POST'])
+    def set_epochs_lr_batchsize_for_client():
+        server.set_epochs_lr_batchsize_for_client(request.form['epochs'],request.form['lr'],request.form['batchsize'],request.form['clienturl'])
+        return Response(status=200)
+
     return app
