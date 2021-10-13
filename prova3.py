@@ -27,11 +27,15 @@ image_data_generator = ImageDataGenerator(preprocessing_function=keras.applicati
 b_size = 16
 
 train_batches = image_data_generator.flow_from_directory(
-            directory="/home/francesc/Escritorio/fed_learning/chest_xray/train", target_size=(224, 224), classes=['PNEUMONIA', 'NORMAL'],
+            directory="/home/francesc/Escritorio/fed_learning/chest_xray/train",
+            target_size=(224, 224),
+            classes=['PNEUMONIA', 'NORMAL'],
             batch_size=b_size)
 
 valid_batches = image_data_generator.flow_from_directory(
-            directory="/home/francesc/Escritorio/fed_learning/chest_xray/test", target_size=(224, 224), classes=['PNEUMONIA', 'NORMAL'],
+            directory="/home/francesc/Escritorio/fed_learning/chest_xray/test",
+            target_size=(224, 224),
+            classes=['PNEUMONIA', 'NORMAL'],
             batch_size=b_size)
 
 
