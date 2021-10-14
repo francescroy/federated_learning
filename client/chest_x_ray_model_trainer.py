@@ -47,7 +47,8 @@ class ChestXRayModelTrainer:
                   epochs=self.client_config.epochs,
                   validation_data=valid_batches,
                   #validation_steps=5, ### aaaaah okay.
-                  verbose=2)
+                  #verbose=2
+                  )
 
         self.__clean_temp_dataset_folder()
         return model.get_weights()
