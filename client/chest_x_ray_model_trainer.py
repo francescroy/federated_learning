@@ -43,10 +43,10 @@ class ChestXRayModelTrainer:
         train_batches, valid_batches = self.__load_datasets()
 
         model.fit(x=train_batches,
-                  #steps_per_epoch=10, ### aaaaah okay.
+                  #steps_per_epoch=5, #10
                   epochs=self.client_config.epochs,
                   validation_data=valid_batches,
-                  #validation_steps=5, ### aaaaah okay.
+                  #validation_steps=5, #5
                   #verbose=2
                   )
 
@@ -66,8 +66,8 @@ class ChestXRayModelTrainer:
         os.makedirs(training_dataset_valid_path + '/NORMAL')
         os.makedirs(training_dataset_valid_path + '/PNEUMONIA')
 
-        self.__build_training_dataset(global_dataset_train_path, training_dataset_train_path, ['NORMAL', 'PNEUMONIA'], 100)
-        self.__build_training_dataset(global_dataset_valid_path, training_dataset_valid_path, ['NORMAL', 'PNEUMONIA'], 50)
+        self.__build_training_dataset(global_dataset_train_path, training_dataset_train_path, ['NORMAL', 'PNEUMONIA'], 200) #100
+        self.__build_training_dataset(global_dataset_valid_path, training_dataset_valid_path, ['NORMAL', 'PNEUMONIA'], 100) #50
 
         image_data_generator = ImageDataGenerator(preprocessing_function=keras.applications.vgg16.preprocess_input)
 

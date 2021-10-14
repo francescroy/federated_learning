@@ -20,9 +20,9 @@ class Server:
         self.init_params()
         self.training_clients = {}
         self.status = ServerStatus.IDLE
-        self.learning_rate = 0.0001
-        self.epochs = 1
-        self.batch_size = 2
+        self.learning_rate = 0.00001 #0.0001
+        self.epochs = 20 #1
+        self.batch_size = 10 #2
 
     def init_params(self):
         if self.mnist_model_params is None:
