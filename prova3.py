@@ -24,7 +24,7 @@ model.compile(optimizer=Adam(learning_rate=0.0001), loss='categorical_crossentro
 
 image_data_generator = ImageDataGenerator(preprocessing_function=keras.applications.vgg16.preprocess_input)
 
-b_size = 2
+b_size = 16
 
 train_batches = image_data_generator.flow_from_directory(
             directory="/home/francesc/Escritorio/fed_learning/chest_xray/train",
@@ -39,13 +39,17 @@ valid_batches = image_data_generator.flow_from_directory(
             batch_size=b_size)
 
 
+model.evaluate(x= valid_batches)   
+
 model.fit(x=train_batches,
-            #steps_per_epoch=10, ### aaaaah okay.
-            epochs=2,
+            steps_per_epoch=10, ### aaaaah okay.
+            epochs=50,
             validation_data=valid_batches,
             #validation_steps=5, ### aaaaah okay.
             #verbose=2
           )
+
+model.evaluate(x= valid_batches)
 
 #### provaaaaaa: lo seguent sera que no recarreguis el dataset a cada epoch i treure steps_per_epoch i
 #### validation_steps... vale tocant el fitxer de CHEST_X_RAY...
