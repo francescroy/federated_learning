@@ -11,16 +11,17 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 model = Sequential([
-            Conv2D(filters=32, kernel_size=(3, 3), activation='relu', padding='same', input_shape=(224, 224, 3)),
-            MaxPool2D(pool_size=(2, 2), strides=2),
-            Conv2D(filters=64, kernel_size=(3, 3), activation='relu', padding='same'),
-            MaxPool2D(pool_size=(2, 2), strides=2),
+            #Conv2D(filters=32, kernel_size=(3, 3), activation='relu', padding='same', input_shape=(224, 224, 3)),
+            #MaxPool2D(pool_size=(2, 2), strides=2),
+            #Conv2D(filters=64, kernel_size=(3, 3), activation='relu', padding='same'),
+            #MaxPool2D(pool_size=(2, 2), strides=2),
+            Dense(units=8,activation='relu',input_shape=(224, 224, 3)),
             Flatten(),
             Dense(units=2, activation='softmax')
 ])
 
 
-model.compile(optimizer=Adam(learning_rate=0.0001), loss='categorical_crossentropy', metrics=['accuracy'])
+model.compile(optimizer=Adam(learning_rate=0.0000001), loss='categorical_crossentropy', metrics=['accuracy'])
 
 image_data_generator = ImageDataGenerator(preprocessing_function=keras.applications.vgg16.preprocess_input)
 
@@ -39,10 +40,10 @@ valid_batches = image_data_generator.flow_from_directory(
             batch_size=b_size)
 
 
-model.evaluate(x= valid_batches)   
+#model.evaluate(x= valid_batches)
 
 model.fit(x=train_batches,
-            steps_per_epoch=10, ### aaaaah okay.
+            steps_per_epoch=50, ### aaaaah okay.
             epochs=50,
             validation_data=valid_batches,
             #validation_steps=5, ### aaaaah okay.
@@ -53,3 +54,5 @@ model.evaluate(x= valid_batches)
 
 #### provaaaaaa: lo seguent sera que no recarreguis el dataset a cada epoch i treure steps_per_epoch i
 #### validation_steps... vale tocant el fitxer de CHEST_X_RAY...
+
+## PARAMETRES IMPORTANTS PER MODIFICAR EL RITME DE LEARNING SON ALPHA I STEPS PER EPOCH...
