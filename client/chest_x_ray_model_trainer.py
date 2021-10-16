@@ -66,8 +66,8 @@ class ChestXRayModelTrainer:
         os.makedirs(training_dataset_valid_path + '/NORMAL')
         os.makedirs(training_dataset_valid_path + '/PNEUMONIA')
 
-        self.__build_training_dataset(global_dataset_train_path, training_dataset_train_path, ['NORMAL', 'PNEUMONIA'], 200) #100
-        self.__build_training_dataset(global_dataset_valid_path, training_dataset_valid_path, ['NORMAL', 'PNEUMONIA'], 100) #50
+        self.__build_training_dataset(global_dataset_train_path, training_dataset_train_path, ['NORMAL', 'PNEUMONIA'], self.client_config.training_images) #100
+        self.__build_training_dataset(global_dataset_valid_path, training_dataset_valid_path, ['NORMAL', 'PNEUMONIA'], self.client_config.test_images) #50
 
         image_data_generator = ImageDataGenerator(preprocessing_function=keras.applications.vgg16.preprocess_input)
 

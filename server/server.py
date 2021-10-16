@@ -20,9 +20,11 @@ class Server:
         self.init_params()
         self.training_clients = {}
         self.status = ServerStatus.IDLE
-        self.learning_rate = 0.00001 #0.0001
-        self.epochs = 20 #1
-        self.batch_size = 10 #2
+        self.learning_rate = 0.0000001 #0.0001
+        self.epochs = 1 #1
+        self.batch_size = 16 #2
+        self.training_images = 200
+        self.test_images = 100
 
     def init_params(self):
         if self.mnist_model_params is None:
@@ -43,15 +45,17 @@ class Server:
             if training_type == TrainingType.MNIST:
                 request_body = model_params_to_request_params(training_type, self.mnist_model_params)
                 # federated_learning_config = FederatedLearningConfig(learning_rate=1., epochs=20, batch_size=256)
-                federated_learning_config = FederatedLearningConfig(self.learning_rate, self.epochs, self.batch_size)
+                federated_learning_config = FederatedLearningConfig(self.learning_rate, self.epochs, self.batch_size, self.training_images, self.test_images)
             elif training_type == TrainingType.CHEST_X_RAY_PNEUMONIA:
                 request_body = model_params_to_request_params(training_type, self.chest_x_ray_model_params)
                 # federated_learning_config = FederatedLearningConfig(learning_rate=0.0001, epochs=1, batch_size=2)
-                federated_learning_config = FederatedLearningConfig(self.learning_rate, self.epochs, self.batch_size)
+                federated_learning_config = FederatedLearningConfig(self.learning_rate, self.epochs, self.batch_size, self.training_images, self.test_images)
 
             request_body['learning_rate'] = federated_learning_config.learning_rate
             request_body['epochs'] = federated_learning_config.epochs
             request_body['batch_size'] = federated_learning_config.batch_size
+            request_body['training_images'] = federated_learning_config.training_images
+            request_body['test_images'] = federated_learning_config.test_images
             request_body['training_type'] = training_type
             print('There are', len(self.training_clients), 'clients registered')
             tasks = []
@@ -65,10 +69,12 @@ class Server:
     async def do_training_client_request(self, training_type, training_client, request_body):
 
         # Let's change the learning rate, epochs and batch size (on the request body) only for those clients that have specific quantities set for these values:
-        if training_client.learning_rate is not None and training_client.epochs is not None and training_client.batch_size is not None:
+        if training_client.learning_rate is not None and training_client.epochs is not None and training_client.batch_size is not None and training_client.training_images is not None and training_client.test_images is not None:
             request_body['learning_rate'] = training_client.learning_rate
             request_body['epochs'] = training_client.epochs
             request_body['batch_size'] = training_client.batch_size
+            request_body['training_images'] = training_client.training_images
+            request_body['test_images'] = training_client.test_images
 
         request_url = training_client.client_url + '/training'
         print('Requesting training to client', request_url)
@@ -150,14 +156,18 @@ class Server:
 
         return True
 
-    def set_epochs_lr_batchsize(self,epochs,lr,batchsize):
+    def set_epochs_lr_batchsize_training_test(self,epochs,learning_rate,batch_size,training_images,test_images):
         self.epochs = int(epochs.strip())
-        self.learning_rate = float(lr.strip())
-        self.batch_size = int(batchsize.strip())
+        self.learning_rate = float(learning_rate.strip())
+        self.batch_size = int(batch_size.strip())
+        self.training_images = int(training_images.strip())
+        self.test_images = int(test_images.strip())
 
-    def set_epochs_lr_batchsize_for_client(self, epochs, lr, batchsize, clienturl):
+    def set_epochs_lr_batchsize_training_test_for_client(self, epochs, learning_rate, batch_size, training_images, test_images, client_url):
         for training_client in self.training_clients.values():
-            if training_client.client_url == clienturl.strip():
+            if training_client.client_url == client_url.strip():
                 training_client.epochs = int(epochs.strip())
-                training_client.learning_rate = float(lr.strip())
-                training_client.batch_size = int(batchsize.strip())
+                training_client.learning_rate = float(learning_rate.strip())
+                training_client.batch_size = int(batch_size.strip())
+                training_client.training_images = int(training_images.strip())
+                training_client.test_images = int(test_images.strip())

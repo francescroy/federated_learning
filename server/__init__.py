@@ -68,15 +68,14 @@ def create_app(test_config=None):
     def page_not_found(error):
         return 'This page does not exist', 404
 
-    @app.route('/set_epochs_lr_batchsize', methods=['POST'])
-    def set_epochs_lr_batchsize():
-        # print('Request POST /client for client_url [', request.form['client_url'], ']')
-        server.set_epochs_lr_batchsize(request.form['epochs'],request.form['lr'],request.form['batchsize'])
+    @app.route('/set_epochs_lr_batchsize_training_test', methods=['POST'])
+    def set_epochs_lr_batchsize_training_test():
+        server.set_epochs_lr_batchsize_training_test(request.form['epochs'],request.form['lr'],request.form['batchsize'],request.form['training'],request.form['test'])
         return Response(status=200)
 
-    @app.route('/set_epochs_lr_batchsize_for_client', methods=['POST'])
-    def set_epochs_lr_batchsize_for_client():
-        server.set_epochs_lr_batchsize_for_client(request.form['epochs'],request.form['lr'],request.form['batchsize'],request.form['clienturl'])
+    @app.route('/set_epochs_lr_batchsize_training_test_for_client', methods=['POST'])
+    def set_epochs_lr_batchsize_training_test_for_client():
+        server.set_epochs_lr_batchsize_training_test_for_client(request.form['epochs'],request.form['lr'],request.form['batchsize'],request.form['training'],request.form['test'],request.form['clienturl'])
         return Response(status=200)
 
     return app

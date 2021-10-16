@@ -27,32 +27,36 @@ image_data_generator = ImageDataGenerator(preprocessing_function=keras.applicati
 
 b_size = 16
 
-train_batches = image_data_generator.flow_from_directory(
+for x in range(50):
+
+    train_batches = image_data_generator.flow_from_directory(
             directory="/home/francesc/Escritorio/fed_learning/chest_xray/train",
             target_size=(224, 224),
             classes=['PNEUMONIA', 'NORMAL'],
-            batch_size=b_size)
+            batch_size=b_size,
+            shuffle=True)
 
-valid_batches = image_data_generator.flow_from_directory(
+    valid_batches = image_data_generator.flow_from_directory(
             directory="/home/francesc/Escritorio/fed_learning/chest_xray/test",
             target_size=(224, 224),
             classes=['PNEUMONIA', 'NORMAL'],
-            batch_size=b_size)
+            batch_size=b_size,
+            shuffle=True)
 
 
-#model.evaluate(x= valid_batches)
 
-model.fit(x=train_batches,
+
+    model.fit(x=train_batches,
             steps_per_epoch=50, ### aaaaah okay.
-            epochs=50,
+            epochs=1,
             validation_data=valid_batches,
             #validation_steps=5, ### aaaaah okay.
             #verbose=2
           )
 
-model.evaluate(x= valid_batches)
+    #model.evaluate(x= valid_batches)
 
-#### provaaaaaa: lo seguent sera que no recarreguis el dataset a cada epoch i treure steps_per_epoch i
-#### validation_steps... vale tocant el fitxer de CHEST_X_RAY...
+    #### provaaaaaa: lo seguent sera que no recarreguis el dataset a cada epoch i treure steps_per_epoch i
+    #### validation_steps... vale tocant el fitxer de CHEST_X_RAY...
 
-## PARAMETRES IMPORTANTS PER MODIFICAR EL RITME DE LEARNING SON ALPHA I STEPS PER EPOCH...
+    ## PARAMETRES IMPORTANTS PER MODIFICAR EL RITME DE LEARNING SON ALPHA I STEPS PER EPOCH...
