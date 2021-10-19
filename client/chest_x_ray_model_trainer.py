@@ -42,18 +42,19 @@ class ChestXRayModelTrainer:
         self.__create_temp_dataset_folder()
         train_batches, valid_batches = self.__load_datasets()
 
-        model.fit(x=train_batches,
-                  #steps_per_epoch=5, #10
-                  epochs=self.client_config.epochs,
-                  validation_data=valid_batches,
-                  #validation_steps=5, #5
-                  #verbose=2
-                  )
+        resutls_train =model.fit(
+                        x=train_batches,
+                        #steps_per_epoch=5, #10
+                        epochs=self.client_config.epochs,
+                        validation_data=valid_batches,
+                        #validation_steps=5, #5
+                        #verbose=2
+                        )
 
-        results = model.evaluate(x= valid_batches)
+        #results_test = model.evaluate(x= valid_batches)
 
         self.__clean_temp_dataset_folder()
-        return model.get_weights(),results
+        return model.get_weights(),resutls_train
 
     def __load_datasets(self):
         print('Loading CHEST X-RAY IMAGES dataset...')

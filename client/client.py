@@ -45,10 +45,15 @@ class Client:
             self.status = ClientStatus.TRAINING
             print('Training started...')
             try:
-                model_params_updated,results = client_model_trainer.train_model()
-                test_accuracy = round(results[1],3)
+                model_params_updated,results_train = client_model_trainer.train_model()
+
+                loss = round(results_train.history["loss"][0],3)
+                accuracy = round(results_train.history["accuracy"][0],3)
+                test_loss = round(results_train.history["val_loss"][0],3)
+                test_accuracy = round(results_train.history["val_accuracy"][0],3)
+
                 model_params_updated = model_params_to_request_params(training_type, model_params_updated)
-                self.update_model_params_on_server(model_params_updated,test_accuracy)
+                self.update_model_params_on_server(model_params_updated,loss, accuracy, test_loss, test_accuracy)
             except Exception as e:
                 raise e
             finally:
@@ -58,11 +63,15 @@ class Client:
             print('Training requested but client status is', self.status)
         sys.stdout.flush()
 
-    def update_model_params_on_server(self, model_params,test_accuracy):
+    def update_model_params_on_server(self, model_params,loss, accuracy, test_loss, test_accuracy):
         request_url = self.SERVER_URL + '/model_params'
         request_body = model_params
         request_body['client_url'] = self.client_url
         request_body['training_type'] = self.training_type
+
+        request_body['loss'] = loss
+        request_body['accuracy'] = accuracy
+        request_body['test_loss'] = test_loss
         request_body['test_accuracy'] = test_accuracy
         
         print('Sending calculated model weights to central node')

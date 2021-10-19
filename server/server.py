@@ -5,12 +5,16 @@ import torch
 
 import numpy as np
 
+import time
+
+
 from .utils import model_params_to_request_params
 from .federated_learning_config import FederatedLearningConfig
 from .client_training_status import ClientTrainingStatus
 from .server_status import ServerStatus
 from .training_client import TrainingClient
 from .training_type import TrainingType
+
 
 
 class Server:
@@ -20,7 +24,7 @@ class Server:
         self.init_params()
         self.training_clients = {}
         self.status = ServerStatus.IDLE
-        self.learning_rate = 0.000001 #0.0001
+        self.learning_rate = 0.0000001 #0.0001
         self.epochs = 1 #1
         self.batch_size = 16 #2
         self.training_images = 200
@@ -57,6 +61,7 @@ class Server:
             request_body['training_images'] = federated_learning_config.training_images
             request_body['test_images'] = federated_learning_config.test_images
             request_body['training_type'] = training_type
+
             print('There are', len(self.training_clients), 'clients registered')
             tasks = []
             for training_client in self.training_clients.values():
@@ -67,6 +72,9 @@ class Server:
         sys.stdout.flush()
 
     async def do_training_client_request(self, training_type, training_client, request_body):
+
+        # Let's mark when the client starts training:
+        training_client.init_training_time = time.time()
 
         # Let's change the learning rate, epochs, batch size, etc (on the request body) only for those clients that have specific quantities set for these values:
         if training_client.learning_rate is not None and training_client.epochs is not None and training_client.batch_size is not None and training_client.training_images is not None and training_client.test_images is not None:
@@ -88,9 +96,18 @@ class Server:
                 else:
                     print('Client', training_client.client_url, 'started training')
 
+
     def update_client_model_params(self, training_type, training_client, client_model_params):
         print('New model params received from client', training_client.client_url)
         training_client.model_params = client_model_params
+        training_client.end_training_time = time.time()
+
+        print("Losses: ", training_client.losses)
+        print("Accuracies: ", training_client.accuracies)
+        print("Test Losses: ", training_client.test_losses)
+        print("Test Accuracies: ", training_client.test_accuracies)
+
+        #print("Number of seconds waiting for this client to end training:", training_client.end_training_time - training_client.init_training_time)
         training_client.status = ClientTrainingStatus.TRAINING_FINISHED
         self.update_server_model_params(training_type)
 
