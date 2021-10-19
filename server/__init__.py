@@ -58,6 +58,7 @@ def create_app(test_config=None):
         print('Request PUT /model_params for client_url [', client_url, '] and training type:', training_type)
         try:
             training_client = server.training_clients[request.json['client_url']]
+            training_client.last_test_accuracy = float(request.json['test_accuracy'].strip())
             server.update_client_model_params(training_type, training_client, request_params_to_model_params(training_type, request.json))
             return Response(status=200)
         except KeyError:

@@ -50,8 +50,10 @@ class ChestXRayModelTrainer:
                   #verbose=2
                   )
 
+        results = model.evaluate(x= valid_batches)
+
         self.__clean_temp_dataset_folder()
-        return model.get_weights()
+        return model.get_weights(),results
 
     def __load_datasets(self):
         print('Loading CHEST X-RAY IMAGES dataset...')

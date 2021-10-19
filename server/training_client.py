@@ -11,6 +11,7 @@ class TrainingClient:
         self.batch_size = None
         self.training_images = None
         self.test_images = None
+        self.last_test_accuracy = None
 
     def __str__(self):
         return "Training client:\n--Client URL: {}\n--Status: {}\n".format(

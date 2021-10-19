@@ -20,7 +20,7 @@ class Server:
         self.init_params()
         self.training_clients = {}
         self.status = ServerStatus.IDLE
-        self.learning_rate = 0.0000001 #0.0001
+        self.learning_rate = 0.000001 #0.0001
         self.epochs = 1 #1
         self.batch_size = 16 #2
         self.training_images = 200
@@ -68,7 +68,7 @@ class Server:
 
     async def do_training_client_request(self, training_type, training_client, request_body):
 
-        # Let's change the learning rate, epochs and batch size (on the request body) only for those clients that have specific quantities set for these values:
+        # Let's change the learning rate, epochs, batch size, etc (on the request body) only for those clients that have specific quantities set for these values:
         if training_client.learning_rate is not None and training_client.epochs is not None and training_client.batch_size is not None and training_client.training_images is not None and training_client.test_images is not None:
             request_body['learning_rate'] = training_client.learning_rate
             request_body['epochs'] = training_client.epochs
