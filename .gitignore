@@ -131,3 +131,5 @@ dmypy.json
 #IntelliJ project's directory
 /.idea/
 /client/tmp/tmp*.*/
+
+/client/tmp/chest_xray/
