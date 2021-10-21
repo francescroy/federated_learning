@@ -14,6 +14,7 @@ from .client_training_status import ClientTrainingStatus
 from .server_status import ServerStatus
 from .training_client import TrainingClient
 from .training_type import TrainingType
+from .intelligent_module import decide_number_of_images_for_next_round
 
 
 
@@ -29,6 +30,7 @@ class Server:
         self.batch_size = 16 #2
         self.training_images = 200
         self.test_images = 100
+        self.tempos_rounds = []
 
     def init_params(self):
         if self.mnist_model_params is None:
@@ -60,6 +62,7 @@ class Server:
             request_body['batch_size'] = federated_learning_config.batch_size
             request_body['training_images'] = federated_learning_config.training_images
             request_body['test_images'] = federated_learning_config.test_images
+
             request_body['training_type'] = training_type
 
             print('There are', len(self.training_clients), 'clients registered')
@@ -84,6 +87,9 @@ class Server:
             request_body['training_images'] = training_client.training_images
             request_body['test_images'] = training_client.test_images
 
+        if True:
+            request_body['training_images'],request_body['test_images'] = decide_number_of_images_for_next_round(training_client,self.training_clients)
+           
         request_url = training_client.client_url + '/training'
         print('Requesting training to client', request_url)
         async with aiohttp.ClientSession() as session:
@@ -96,10 +102,11 @@ class Server:
                 else:
                     print('Client', training_client.client_url, 'started training')
 
-
     def update_client_model_params(self, training_type, training_client, client_model_params):
         print('New model params received from client', training_client.client_url)
         training_client.model_params = client_model_params
+
+        # Let's mark when the client ends training:
         training_client.end_training_time = time.time()
 
         print("Losses: ", training_client.losses)
@@ -114,6 +121,10 @@ class Server:
     def update_server_model_params(self, training_type):
         if self.can_update_central_model_params():
             print('Updating global model params')
+
+            self.tempos_rounds.append(time.time())
+            print("Tempos: ",self.get_list_tempos())
+
             self.status = ServerStatus.UPDATING_MODEL_PARAMS
             if training_type == TrainingType.MNIST:
                 received_weights = []
@@ -188,3 +199,10 @@ class Server:
                 training_client.batch_size = int(batch_size.strip())
                 training_client.training_images = int(training_images.strip())
                 training_client.test_images = int(test_images.strip())
+
+    def get_list_tempos(self):
+
+        num_of_rounds = len(self.tempos_rounds)
+        res_list = [round(self.tempos_rounds[i] - ([self.tempos_rounds[0]] * num_of_rounds)[i],3) for i in range(num_of_rounds)]
+
+        return res_list
