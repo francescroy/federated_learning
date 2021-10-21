@@ -7,6 +7,7 @@ import numpy as np
 
 import time
 
+import copy
 
 from .utils import model_params_to_request_params
 from .federated_learning_config import FederatedLearningConfig
@@ -31,6 +32,7 @@ class Server:
         self.training_images = 200
         self.test_images = 100
         self.tempos_rounds = []
+        self.round = 0
 
     def init_params(self):
         if self.mnist_model_params is None:
@@ -46,6 +48,11 @@ class Server:
         elif len(self.training_clients) == 0:
             print("There aren't any clients registered in the system, nothing to do yet")
         else:
+            self.round = self.round+1
+
+            if True and self.round>1:
+                decide_number_of_images_for_next_round(self.training_clients)
+
             request_body = {}
             federated_learning_config = None
             if training_type == TrainingType.MNIST:
@@ -74,22 +81,28 @@ class Server:
             await asyncio.gather(*tasks)
         sys.stdout.flush()
 
+    def modify_request_body_for_client(self, training_client, request_body):
+
+        if training_client.learning_rate is not None:
+            request_body['learning_rate'] = training_client.learning_rate
+        if training_client.epochs is not None:
+            request_body['epochs'] = training_client.epochs
+        if training_client.batch_size is not None:
+            request_body['batch_size'] = training_client.batch_size
+        if training_client.training_images is not None:
+            request_body['training_images'] = training_client.training_images
+        if training_client.test_images is not None:
+            request_body['test_images'] = training_client.test_images
+
+        return request_body
+
     async def do_training_client_request(self, training_type, training_client, request_body):
 
         # Let's mark when the client starts training:
         training_client.init_training_time = time.time()
 
-        # Let's change the learning rate, epochs, batch size, etc (on the request body) only for those clients that have specific quantities set for these values:
-        if training_client.learning_rate is not None and training_client.epochs is not None and training_client.batch_size is not None and training_client.training_images is not None and training_client.test_images is not None:
-            request_body['learning_rate'] = training_client.learning_rate
-            request_body['epochs'] = training_client.epochs
-            request_body['batch_size'] = training_client.batch_size
-            request_body['training_images'] = training_client.training_images
-            request_body['test_images'] = training_client.test_images
+        request_body = self.modify_request_body_for_client(training_client, copy.deepcopy(request_body))
 
-        if True:
-            request_body['training_images'],request_body['test_images'] = decide_number_of_images_for_next_round(training_client,self.training_clients)
-           
         request_url = training_client.client_url + '/training'
         print('Requesting training to client', request_url)
         async with aiohttp.ClientSession() as session:
@@ -115,6 +128,7 @@ class Server:
         print("Test Accuracies: ", training_client.test_accuracies)
 
         #print("Number of seconds waiting for this client to end training:", training_client.end_training_time - training_client.init_training_time)
+
         training_client.status = ClientTrainingStatus.TRAINING_FINISHED
         self.update_server_model_params(training_type)
 
@@ -206,3 +220,4 @@ class Server:
         res_list = [round(self.tempos_rounds[i] - ([self.tempos_rounds[0]] * num_of_rounds)[i],3) for i in range(num_of_rounds)]
 
         return res_list
+
