@@ -1,6 +1,8 @@
 import os
 import signal
 
+import time
+
 from flask import Flask, request, Response
 from os import environ
 
@@ -25,6 +27,9 @@ def index():
 
 @app.route('/training', methods=['POST'])
 def training():
+
+    #time.sleep(20)
+
     training_type = request.json['training_type']
     print('Request POST /training for training type:', training_type)
     federated_learning_config = FederatedLearningConfig(request.json['learning_rate'],

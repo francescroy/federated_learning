@@ -50,7 +50,7 @@ class Server:
         else:
             self.round = self.round+1
 
-            if True and self.round>1:
+            if False and self.round>1:
                 decide_number_of_images_for_next_round(self.training_clients)
 
             request_body = {}
