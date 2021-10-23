@@ -4,7 +4,7 @@ import random
 import shutil
 import tempfile
 
-from .config import GLOBAL_TMP_PATH, GLOBAL_DATASETS
+from .config import GLOBAL_TMP_PATH, GLOBAL_DATASETS, INITIAL_MODEL_PATH
 from tensorflow import keras
 from tensorflow.keras.layers import Dense, Flatten, Conv2D, MaxPool2D
 from tensorflow.keras.models import Sequential
@@ -39,7 +39,7 @@ class ChestXRayModelTrainer:
             model.set_weights(self.model_params)
         else:
             print('Using default model weights')
-            model = keras.models.load_model('/home/francesc/Escritorio/keras_model')
+            model = keras.models.load_model(INITIAL_MODEL_PATH)
             # model.save('/home/francesc/Escritorio/keras_model')
             # Realment el més correcte seria que en el constructor fes load del model i que el model fos un atribut de la classe...
 
