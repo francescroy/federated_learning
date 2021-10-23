@@ -28,9 +28,9 @@ class Server:
         self.status = ServerStatus.IDLE
         self.learning_rate = 0.0000001 #0.0001
         self.epochs = 1 #1
-        self.batch_size = 16 #2
-        self.training_images = 200
-        self.test_images = 100
+        self.batch_size = 32 #2
+        self.training_images = 400
+        self.test_images = 200
         self.tempos_rounds = []
         self.round = 0
 

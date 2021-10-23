@@ -33,11 +33,15 @@ class ChestXRayModelTrainer:
         #model.summary()
 
         model.compile(optimizer=Adam(learning_rate=self.client_config.learning_rate), loss='categorical_crossentropy', metrics=['accuracy'])
+
         if self.model_params is not None:
             print('Using model weights from central node')
             model.set_weights(self.model_params)
         else:
             print('Using default model weights')
+            model = keras.models.load_model('/home/francesc/Escritorio/keras_model')
+            # model.save('/home/francesc/Escritorio/keras_model')
+            # Realment el més correcte seria que en el constructor fes load del model i que el model fos un atribut de la classe...
 
         self.__create_temp_dataset_folder()
         train_batches, valid_batches = self.__load_datasets()
