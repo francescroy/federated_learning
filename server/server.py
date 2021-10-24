@@ -26,9 +26,9 @@ class Server:
         self.init_params()
         self.training_clients = {}
         self.status = ServerStatus.IDLE
-        self.learning_rate = 0.0000001 #0.0001
-        self.epochs = 1 #1
-        self.batch_size = 32 #2
+        self.learning_rate = 0.0000001
+        self.epochs = 1
+        self.batch_size = 32
         self.training_images = 400
         self.test_images = 200
         self.tempos_rounds = []
@@ -49,8 +49,9 @@ class Server:
             print("There aren't any clients registered in the system, nothing to do yet")
         else:
             self.round = self.round+1
+            print("\n\n\n\n\nRound: ",self.round,"\n\n\n\n\n")
 
-            if False and self.round>1:
+            if True and self.round>10:
                 decide_number_of_images_for_next_round(self.training_clients)
 
             request_body = {}
@@ -99,7 +100,7 @@ class Server:
     async def do_training_client_request(self, training_type, training_client, request_body):
 
         # Let's mark when the client starts training:
-        training_client.init_training_time = time.time()
+        training_client.init_training_time.append(time.time())
 
         request_body = self.modify_request_body_for_client(training_client, copy.deepcopy(request_body))
 
@@ -120,7 +121,8 @@ class Server:
         training_client.model_params = client_model_params
 
         # Let's mark when the client ends training:
-        training_client.end_training_time = time.time()
+        training_client.end_training_time.append(time.time())
+        training_client.add_workload_rythm(self.training_images, self.round)
 
         print("Losses: ", training_client.losses)
         print("Accuracies: ", training_client.accuracies)

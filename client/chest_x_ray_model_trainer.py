@@ -4,6 +4,9 @@ import random
 import shutil
 import tempfile
 
+import time
+import numpy as np
+
 from .config import GLOBAL_TMP_PATH, GLOBAL_DATASETS, INITIAL_MODEL_PATH
 from tensorflow import keras
 from tensorflow.keras.layers import Dense, Flatten, Conv2D, MaxPool2D
@@ -56,6 +59,16 @@ class ChestXRayModelTrainer:
                         )
 
         #results_test = model.evaluate(x= valid_batches)
+
+        """
+        #mean_sleep = 10
+        mean_sleep = 30
+
+        sleep_time = np.random.normal(mean_sleep,3)
+        if sleep_time <= (mean_sleep - 10) or sleep_time >= (mean_sleep + 10):
+            sleep_time = mean_sleep
+        time.sleep(sleep_time)
+        """
 
         self.__clean_temp_dataset_folder()
         return model.get_weights(),resutls_train

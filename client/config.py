@@ -1,5 +1,6 @@
 DEFAULT_SERVER_URL = 'http://127.0.0.1:5000'
 GLOBAL_TMP_PATH = '/tmp'
 #GLOBAL_DATASETS = '../../../datasets'
-GLOBAL_DATASETS = '/home/francesc/Escritorio/fed_learning'
+#GLOBAL_DATASETS = '/home/francesc/Escritorio/fed_learning'
+GLOBAL_DATASETS = '/home/francesc/Escritorio'
 INITIAL_MODEL_PATH = '/home/francesc/Escritorio/keras_model'
