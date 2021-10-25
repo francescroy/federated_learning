@@ -1,5 +1,5 @@
 from .client_training_status import ClientTrainingStatus
-
+import numpy as np
 
 class TrainingClient:
     def __init__(self, client_url):
@@ -40,3 +40,21 @@ class TrainingClient:
 
         self.workload_rythm.append(rythm)
 
+    def get_mean_training_time(self,time_window):
+
+        last_window_slice_init = np.array(self.init_training_time[-time_window::])
+        last_window_slice_end = np.array(self.end_training_time[-time_window::])
+
+        last_window_time = last_window_slice_end - last_window_slice_init
+
+        return np.mean(last_window_time)
+
+    def get_mean_workload_rythm(self,time_window):
+
+        last_window_workload_rythm = np.array(self.workload_rythm[-time_window::])
+
+        return np.mean(last_window_workload_rythm)
+
+    def get_last_training_time(self):
+
+        return self.end_training_time[-1::][0] - self.init_training_time[-1::][0]

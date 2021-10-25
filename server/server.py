@@ -51,7 +51,7 @@ class Server:
             self.round = self.round+1
             print("\n\n\n\n\nRound: ",self.round,"\n\n\n\n\n")
 
-            if True and self.round>10:
+            if False and self.round>5:
                 decide_number_of_images_for_next_round(self.training_clients)
 
             request_body = {}

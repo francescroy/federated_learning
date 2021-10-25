@@ -1,28 +1,27 @@
 
-import numpy as np
 
 def decide_number_of_images_for_next_round(training_clients):
 
-    time_window = 10 
+    time_window = 5
 
-    time_mean = []
-    workload_rythm_mean = []
-
+    worst_client = list(training_clients.values())[0]
 
     for client in training_clients.values():
+        if client.get_mean_workload_rythm(time_window) < worst_client.get_mean_workload_rythm(time_window):
+            worst_client= client
 
-        last_window_slice_init = np.array(client.init_training_time[-time_window::])
-        last_window_slice_end = np.array(client.init_training_time[-time_window::])
-        last_window_time = last_window_slice_end - last_window_slice_init
-        print("Hereeeee: ",last_window_time)
-        print(np.mean(last_window_time))
-        time_mean.append(np.mean(last_window_time))
-
+    #print(worst_client.get_mean_workload_rythm(time_window))
 
     for client in training_clients.values():
-
         if client.training_images is None:
             client.training_images = 400
+
+    for client in training_clients.values():
+        if client.client_url != worst_client.client_url:
+            #if client.get_mean_training_time(time_window) < worst_client.get_mean_training_time(time_window):
+            if client.get_last_training_time() < worst_client.get_last_training_time():
+                client.training_images = client.training_images + 10
+
 
 
 
