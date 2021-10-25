@@ -133,3 +133,5 @@ dmypy.json
 /client/tmp/tmp*.*/
 
 /client/tmp/chest_xray/
+
+/client/tensorflow-2.5.0-cp38-cp38-linux_x86_64.whl
