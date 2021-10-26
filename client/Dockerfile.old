@@ -18,12 +18,11 @@ RUN pip install torch torchvision \
 && pip install aiohttp[speedups] \
 && pip install flask
 
+
+
 RUN apt-get purge -y --auto-remove build-essential
 
 WORKDIR /federated-learning-network/node
 
 EXPOSE 5000
 CMD ["/usr/local/bin/flask", "run"]
-
-
-
