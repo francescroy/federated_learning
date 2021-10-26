@@ -1,5 +1,5 @@
 DEFAULT_SERVER_URL = 'http://127.0.0.1:5000'
 GLOBAL_TMP_PATH = '/tmp'
-#GLOBAL_DATASETS = '/home/francesc/Escritorio/fed_learning' # inside there is chest_xray folder
-GLOBAL_DATASETS = '/home/francesc/Escritorio/datasets' # inside there is chest_xray folder
-INITIAL_MODEL_PATH = '/home/francesc/Escritorio/initial_models/keras_model'
+GLOBAL_DATASETS = '/home/francesc/Escritorio/fed_learning' # inside there is chest_xray folder
+#GLOBAL_DATASETS = '/home/francesc/Escritorio/datasets' # inside there is chest_xray folder
+INITIAL_MODEL_PATH = '/home/francesc/Escritorio/fed_learning/keras_model'
