@@ -25,13 +25,17 @@ class ChestXRayModelTrainer:
         self.chest_x_ray_temp_folder = current_directory + GLOBAL_TMP_PATH + '/chest_xray/'
 
     def train_model(self):
+
+        #initializer = keras.initializers.RandomNormal(mean=0., stddev=0.01, seed=23)
+        initializer = keras.initializers.RandomUniform(minval=0., maxval=.1, seed=23)
+
         model = Sequential([
-            Conv2D(filters=32, kernel_size=(3, 3), activation='relu', padding='same', input_shape=(224, 224, 3)),
+            Conv2D(filters=32, kernel_size=(3, 3), activation='relu', padding='same', input_shape=(224, 224, 3), kernel_initializer=initializer, bias_initializer=initializer),
             MaxPool2D(pool_size=(2, 2), strides=2),
-            Conv2D(filters=64, kernel_size=(3, 3), activation='relu', padding='same'),
+            Conv2D(filters=64, kernel_size=(3, 3), activation='relu', padding='same', kernel_initializer=initializer, bias_initializer=initializer),
             MaxPool2D(pool_size=(2, 2), strides=2),
             Flatten(),
-            Dense(units=2, activation='softmax')
+            Dense(units=2, activation='softmax', kernel_initializer=initializer, bias_initializer=initializer)
         ])
         #model.summary()
 
@@ -42,9 +46,9 @@ class ChestXRayModelTrainer:
             model.set_weights(self.model_params)
         else:
             print('Using default model weights')
-            model = keras.models.load_model(INITIAL_MODEL_PATH)
+            # model = keras.models.load_model(INITIAL_MODEL_PATH) # not needed anymore...
             # model.save('/home/francesc/Escritorio/keras_model')
-            # Realment el més correcte seria que en el constructor fes load del model i que el model fos un atribut de la classe...
+
 
         self.__create_temp_dataset_folder()
         train_batches, valid_batches = self.__load_datasets()
