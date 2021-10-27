@@ -12,13 +12,13 @@ apt-get clean && \
 rm -rf /var/lib/apt/lists/*
 
 RUN pip install torch torchvision \
-&& pip install tensorflow \
+#&& pip install --ignore-installed --upgrade ./node/tensorflow-2.5.0-cp38-cp38-linux_x86_64.whl \
+&& pip install ./node/tensorflow-2.5.0-cp38-cp38-linux_x86_64.whl \
+&& pip uninstall tensorflow-cpu \
 && pip install fastai \
 && pip install python-dotenv \
 && pip install aiohttp[speedups] \
 && pip install flask
-
-
 
 RUN apt-get purge -y --auto-remove build-essential
 
