@@ -223,3 +223,13 @@ class Server:
 
         return res_list
 
+    def get_tempos_and_accuracies(self):
+
+        accuracies = []
+        test_accuracies = []
+
+        for training_client in self.training_clients.values():
+            accuracies.append(training_client.accuracies)
+            test_accuracies.append(training_client.test_accuracies)
+
+        return self.get_list_tempos(), accuracies, test_accuracies

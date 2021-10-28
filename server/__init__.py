@@ -1,5 +1,6 @@
 import asyncio
 import os
+from flask import json
 
 from flask import (
     Flask, Response, request, render_template
@@ -83,5 +84,15 @@ def create_app(test_config=None):
     def set_epochs_lr_batchsize_training_test_for_client():
         server.set_epochs_lr_batchsize_training_test_for_client(request.form['epochs'],request.form['lr'],request.form['batchsize'],request.form['training'],request.form['test'],request.form['clienturl'])
         return Response(status=200)
+
+    @app.route('/get_tempos_and_accuracies', methods=['GET'])
+    def get_tempos_and_accuracies():
+        tempos, accuracies, test_accuracies = server.get_tempos_and_accuracies()
+        response = app.response_class(
+            response=json.dumps([tempos,accuracies,test_accuracies]),
+            status=200,
+            mimetype='application/json'
+        )
+        return response
 
     return app
