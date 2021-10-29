@@ -51,9 +51,6 @@ class Server:
             self.round = self.round+1
             print("\n\n\n\n\nRound: ",self.round,"\n\n\n\n\n")
 
-            if True and self.round>5:
-                decide_number_of_images_for_next_round(self.training_clients)
-
             request_body = {}
             federated_learning_config = None
             if training_type == TrainingType.MNIST:
@@ -201,20 +198,20 @@ class Server:
         return True
 
     def set_epochs_lr_batchsize_training_test(self,epochs,learning_rate,batch_size,training_images,test_images):
-        self.epochs = int(epochs.strip())
-        self.learning_rate = float(learning_rate.strip())
-        self.batch_size = int(batch_size.strip())
-        self.training_images = int(training_images.strip())
-        self.test_images = int(test_images.strip())
+        if (epochs!= 'None'): self.epochs = int(epochs.strip())
+        if (learning_rate!= 'None'): self.learning_rate = float(learning_rate.strip())
+        if (batch_size!= 'None'): self.batch_size = int(batch_size.strip())
+        if (training_images!= 'None'): self.training_images = int(training_images.strip())
+        if (test_images!= 'None'): self.test_images = int(test_images.strip())
 
     def set_epochs_lr_batchsize_training_test_for_client(self, epochs, learning_rate, batch_size, training_images, test_images, client_url):
         for training_client in self.training_clients.values():
             if training_client.client_url == client_url.strip():
-                training_client.epochs = int(epochs.strip())
-                training_client.learning_rate = float(learning_rate.strip())
-                training_client.batch_size = int(batch_size.strip())
-                training_client.training_images = int(training_images.strip())
-                training_client.test_images = int(test_images.strip())
+                if (epochs!= 'None'): training_client.epochs = int(epochs.strip())
+                if (learning_rate!= 'None'): training_client.learning_rate = float(learning_rate.strip())
+                if (batch_size!= 'None'): training_client.batch_size = int(batch_size.strip())
+                if (training_images!= 'None'): training_client.training_images = int(training_images.strip())
+                if (test_images!= 'None'): training_client.test_images = int(test_images.strip())
 
     def get_list_tempos(self):
 
@@ -233,3 +230,15 @@ class Server:
             test_accuracies.append(training_client.test_accuracies)
 
         return self.get_list_tempos(), accuracies, test_accuracies
+
+    def get_training_clients(self):
+
+        training_clients = {}
+
+        for training_client in self.training_clients.values():
+            training_clients[training_client.client_url] = copy.deepcopy(training_client)
+            training_clients[training_client.client_url].model_params = None #not necessary to send params...
+            training_clients[training_client.client_url].status = None #not necessary to send status...
+            training_clients[training_client.client_url] = training_clients[training_client.client_url].__dict__ # "serializing objects..."
+
+        return training_clients

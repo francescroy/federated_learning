@@ -1,6 +1,7 @@
 import asyncio
 import os
 from flask import json
+import pickle
 
 from flask import (
     Flask, Response, request, render_template
@@ -90,6 +91,16 @@ def create_app(test_config=None):
         tempos, accuracies, test_accuracies = server.get_tempos_and_accuracies()
         response = app.response_class(
             response=json.dumps([tempos,accuracies,test_accuracies]),
+            status=200,
+            mimetype='application/json'
+        )
+        return response
+
+    @app.route('/get_training_clients', methods=['GET'])
+    def get_training_clients():
+        training_clients = server.get_training_clients()
+        response = app.response_class(
+            response=json.dumps(list(training_clients.values())),
             status=200,
             mimetype='application/json'
         )
