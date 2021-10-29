@@ -28,7 +28,8 @@ def index():
 @app.route('/training', methods=['POST'])
 def training():
 
-    #time.sleep(20)
+    if environ.get('CLIENT_URL') == "http://localhost:5002":
+        time.sleep(40)
 
     training_type = request.json['training_type']
     print('Request POST /training for training type:', training_type)

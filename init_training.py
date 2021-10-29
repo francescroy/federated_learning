@@ -56,11 +56,11 @@ class TrainingClient:
 class Server:
     def __init__(self):
         self.training_clients = {}
-        self.learning_rate = 0.0000001
+        self.learning_rate = 0.000001
         self.epochs = 1
-        self.batch_size = 32
-        self.training_images = 400
-        self.test_images = 200
+        self.batch_size = 16
+        self.training_images = 200
+        self.test_images = 100
         self.tempos_rounds = []
         self.round = 0
 
@@ -126,7 +126,7 @@ def decide_number_of_images_for_next_round(training_clients, server_training_ima
 
 round=0
 
-while round< 10:
+while round< 50:
 
     round = round + 1
 
@@ -136,8 +136,8 @@ while round< 10:
 
     #print(server.training_clients['http://localhost:5001'].workload_rythm)
 
-    if round > 3:
-        decide_number_of_images_for_next_round(server.training_clients, server.training_images,3)
+    if round > 5:
+        decide_number_of_images_for_next_round(server.training_clients, server.training_images,5)
 
 
 

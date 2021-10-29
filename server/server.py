@@ -26,11 +26,11 @@ class Server:
         self.init_params()
         self.training_clients = {}
         self.status = ServerStatus.IDLE
-        self.learning_rate = 0.0000001
+        self.learning_rate = 0.000001
         self.epochs = 1
-        self.batch_size = 32
-        self.training_images = 400
-        self.test_images = 200
+        self.batch_size = 16
+        self.training_images = 200
+        self.test_images = 100
         self.tempos_rounds = []
         self.round = 0
 
