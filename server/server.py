@@ -15,7 +15,7 @@ from .client_training_status import ClientTrainingStatus
 from .server_status import ServerStatus
 from .training_client import TrainingClient
 from .training_type import TrainingType
-from .intelligent_module import decide_number_of_images_for_next_round
+
 
 
 
