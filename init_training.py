@@ -3,8 +3,8 @@ import requests
 import time
 import numpy as np
 
-url = 'http://127.0.0.1:5000'
-#url = 'http://10.139.40.19:5000'
+#url = 'http://127.0.0.1:5000'
+url = 'http://10.139.40.19:5000'
 
 ########################################
 ########################################
@@ -68,9 +68,9 @@ class Server:
         self.status = None
         self.learning_rate = 0.000001
         self.epochs = 1
-        self.batch_size = 16
-        self.training_images = 200
-        self.test_images = 100
+        self.batch_size = 4
+        self.training_images = 50
+        self.test_images = 25
         self.tempos_rounds = []
         self.round = 0
 
@@ -103,7 +103,7 @@ def add_or_update_client(dict):
 
 
 
-def fill_training_clients(server, x):
+def fill_training_clients(x):
     for i in range(len(x.json())):
         add_or_update_client(x.json()[i])
         #print(obj.workload_rythm)
@@ -127,7 +127,7 @@ def decide_number_of_images_for_next_round(training_clients, server_training_ima
     for client in training_clients.values():
         if client.client_url != worst_client.client_url:
             #if client.get_mean_training_time(time_window) < worst_client.get_mean_training_time(time_window):
-            if client.get_last_training_time() < worst_client.get_last_training_time() - 5:
+            if client.get_last_training_time() < worst_client.get_last_training_time() - 1:
 
                 if client.last_jump_sign == -1:
                     if len(client.jumps) !=1:
@@ -149,7 +149,7 @@ def decide_number_of_images_for_next_round(training_clients, server_training_ima
 
 
 
-            elif client.get_last_training_time() > worst_client.get_last_training_time() + 5:
+            elif client.get_last_training_time() > worst_client.get_last_training_time() + 1:
 
                 if client.last_jump_sign == +1:
                     if len(client.jumps) != 1:
@@ -175,28 +175,34 @@ def decide_number_of_images_for_next_round(training_clients, server_training_ima
 
 
 
+requests.post(url + "/set_epochs_lr_batchsize_training_test",
+                              data={
+                                  'epochs': str(server.epochs),
+                                  'lr': str(server.learning_rate),
+                                  'batchsize': str(server.batch_size),
+                                  'training': str(server.training_images),
+                                  'test': str(server.test_images)
+                                }
+                              )
 
+time.sleep(1.0)
 
 round=0
 
-while round< 50:
+while round< 5000:
 
     round = round + 1
 
     x = requests.get(url + "/get_training_clients")
-    fill_training_clients(server, x)
+    fill_training_clients(x)
 
-    #print(server.training_clients['http://localhost:5001'].workload_rythm)
-
-    if round > 3:
-        decide_number_of_images_for_next_round(server.training_clients, server.training_images,3)
-
-
+    #if round > 3:
+    #    decide_number_of_images_for_next_round(server.training_clients, server.training_images,3)
 
     requests.post(url+"/training", json = {'training_type': 'CHEST_X_RAY_PNEUMONIA'}, headers = {"Content-Type": "application/json"})
     print("Ronda ",round," completada.")
 
-    time.sleep(2.0)
+    time.sleep(5.0)
 
 
 
