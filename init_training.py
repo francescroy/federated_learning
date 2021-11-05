@@ -34,7 +34,7 @@ class TrainingClient:
 
         self.workload_rythm = []
 
-        self.jumps = [10,25,50,100,200,400,800]
+        self.jumps = [1,3,6,12,25,50,100]
         self.last_jump_sign = +1
 
     def get_mean_training_time(self,time_window):
@@ -129,7 +129,12 @@ def decide_number_of_images_for_next_round(training_clients, server_training_ima
             #if client.get_mean_training_time(time_window) < worst_client.get_mean_training_time(time_window):
             if client.get_last_training_time() < worst_client.get_last_training_time() - 1:
 
+                print("per sota el del lab")
+
                 if client.last_jump_sign == -1:
+
+                    print("canvi")
+
                     if len(client.jumps) !=1:
                         client.jumps.pop()
 
@@ -151,7 +156,12 @@ def decide_number_of_images_for_next_round(training_clients, server_training_ima
 
             elif client.get_last_training_time() > worst_client.get_last_training_time() + 1:
 
+                print("per sobre el del lab")
+
                 if client.last_jump_sign == +1:
+
+                    print("canvi")
+
                     if len(client.jumps) != 1:
                         client.jumps.pop()
 
@@ -197,7 +207,7 @@ while round< 5000:
     fill_training_clients(x)
 
     #if round > 3:
-    #    decide_number_of_images_for_next_round(server.training_clients, server.training_images,3)
+    #    decide_number_of_images_for_next_round(server.training_clients, server.training_images,3) 
 
     requests.post(url+"/training", json = {'training_type': 'CHEST_X_RAY_PNEUMONIA'}, headers = {"Content-Type": "application/json"})
     print("Ronda ",round," completada.")
