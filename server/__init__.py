@@ -106,4 +106,9 @@ def create_app(test_config=None):
         )
         return response
 
+    @app.route('/set_server_version', methods=['POST'])
+    def set_server_version():
+        server.set_server_version(request.form['version'])
+        return Response(status=200)
+
     return app

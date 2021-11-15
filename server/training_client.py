@@ -30,13 +30,15 @@ class TrainingClient:
             self.client_url,
             self.status)
 
-    def add_workload_rythm(self, default_training_images, round):
-        rythm = None
+    def add_workload_rythm(self, default_work, round, version):
 
-        if self.training_images is None:
-            rythm = float(2*default_training_images / (self.end_training_time[round-1] - self.init_training_time[round-1]))
-        else:
-            rythm = float(2*self.training_images / (self.end_training_time[round-1] - self.init_training_time[round-1]))
+        rythm = float(default_work / (self.end_training_time[round-1] - self.init_training_time[round-1]))
+
+        if version==1 and self.training_images is not None:
+            rythm = float(self.training_images / (self.end_training_time[round-1] - self.init_training_time[round-1]))
+
+        elif version==2 and self.epochs is not None:
+            rythm = float(self.epochs / (self.end_training_time[round-1] - self.init_training_time[round-1]))
 
         self.workload_rythm.append(rythm)
 

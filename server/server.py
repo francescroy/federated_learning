@@ -17,8 +17,6 @@ from .training_client import TrainingClient
 from .training_type import TrainingType
 
 
-
-
 class Server:
     def __init__(self):
         self.mnist_model_params = None
@@ -33,6 +31,7 @@ class Server:
         self.test_images = 100
         self.tempos_rounds = []
         self.round = 0
+        self.version = 2
 
     def init_params(self):
         if self.mnist_model_params is None:
@@ -119,14 +118,13 @@ class Server:
 
         # Let's mark when the client ends training:
         training_client.end_training_time.append(time.time())
-        training_client.add_workload_rythm(self.training_images, self.round)
 
-        print("Losses: ", training_client.losses)
-        print("Accuracies: ", training_client.accuracies)
-        print("Test Losses: ", training_client.test_losses)
-        print("Test Accuracies: ", training_client.test_accuracies)
-
-        #print("Number of seconds waiting for this client to end training:", training_client.end_training_time - training_client.init_training_time)
+        if self.version ==0:
+            pass # fed learning baseline, does not need to keep rythms
+        elif self.version==1:
+            training_client.add_workload_rythm(self.training_images, self.round, self.version)
+        elif self.version==2:
+            training_client.add_workload_rythm(self.epochs, self.round, self.version)
 
         training_client.status = ClientTrainingStatus.TRAINING_FINISHED
         self.update_server_model_params(training_type)
@@ -242,3 +240,6 @@ class Server:
             training_clients[training_client.client_url] = training_clients[training_client.client_url].__dict__ # "serializing objects..."
 
         return training_clients
+
+    def set_server_version(self, version):
+        self.version = int(version.strip())
