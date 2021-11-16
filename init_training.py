@@ -120,7 +120,7 @@ def decide_number_of_images_for_next_round(server, time_window, worst_client_las
             worst_client = client
 
     if worst_client_last_round is not None:
-        if worst_client_last_round.client_url != worst_client.client_url:
+        if worst_client_last_round.client_url != worst_client.client_url: # We do a "reset"
             for client in server.training_clients.values():
                 requests.post(url + "/set_epochs_lr_batchsize_training_test_for_client",
                   data={
@@ -133,15 +133,12 @@ def decide_number_of_images_for_next_round(server, time_window, worst_client_las
                     }
                   )
 
-            for client in server.training_clients.values():
                 client.jumps = [1, 3, 6, 12, 25, 50, 100]
                 client.last_jump_sign = +1
 
         else:
-
             for client in server.training_clients.values():
                 if client.client_url != worst_client.client_url:
-                    #if client.get_mean_training_time(time_window) < worst_client.get_mean_training_time(time_window):
                     if client.get_last_training_time() < worst_client.get_last_training_time() - 1:
 
                         if client.last_jump_sign == -1:
@@ -182,6 +179,8 @@ def decide_number_of_images_for_next_round(server, time_window, worst_client_las
 
                         client.last_jump_sign = -1
 
+                    else:
+                        pass  # If we are between worst client time +1 and -1 we are okay.
     return worst_client
 
 def decide_number_of_epochs_for_next_round(server, time_window, worst_client_last_round):
@@ -193,7 +192,7 @@ def decide_number_of_epochs_for_next_round(server, time_window, worst_client_las
             worst_client = client
 
     if worst_client_last_round is not None:
-        if worst_client_last_round.client_url != worst_client.client_url:
+        if worst_client_last_round.client_url != worst_client.client_url:  # We do a "reset"
             for client in server.training_clients.values():
                 requests.post(url + "/set_epochs_lr_batchsize_training_test_for_client",
                               data={
@@ -203,10 +202,9 @@ def decide_number_of_epochs_for_next_round(server, time_window, worst_client_las
                                   'training': 'None',
                                   'test': 'None',
                                   'clienturl': str(client.client_url)
-                              }
+                                }
                               )
 
-            for client in server.training_clients.values():
                 client.jumps = [1, 2, 3, 5]
                 client.last_jump_sign = +1
 
@@ -287,16 +285,14 @@ def main():
                                 }
                               )
 
-        if server.round > 5:
+        if server.round > 5: # We start being adaptative once we have some data collected from previous rounds...
             if server.version==1:
                 worst_client_last_round = decide_number_of_images_for_next_round(server,3, worst_client_last_round)
             elif server.version==2:
                 worst_client_last_round = decide_number_of_epochs_for_next_round(server,3, worst_client_last_round)
 
 
-        response_of_request = requests.post(url+"/training", json = {'training_type': 'CHEST_X_RAY_PNEUMONIA'}, headers = {"Content-Type": "application/json"})
-
-        print(response_of_request.text)
+        requests.post(url+"/training", json = {'training_type': 'CHEST_X_RAY_PNEUMONIA'}, headers = {"Content-Type": "application/json"})
         print("Ronda ",server.round," completada.")
 
         time.sleep(5.0)
