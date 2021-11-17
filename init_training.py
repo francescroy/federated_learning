@@ -58,35 +58,16 @@ class TrainingClient:
 
         return self.end_training_time[-1::][0] - self.init_training_time[-1::][0]
 
-########################################
-########################################
-########################################
-
-class Server:
-    def __init__(self):
-        self.mnist_model_params = None
-        self.chest_x_ray_model_params = None
-        self.training_clients = {}
-        self.status = None
-        self.learning_rate = 0.0000001
-        self.epochs = 10 #1
-        self.batch_size = 4
-        self.training_images = 250 #500
-        self.test_images = 50 #100
-        self.tempos_rounds = []
-        self.round = 0
-        self.version = 2
 
 
 
 
+def add_or_update_client(dict,training_clients,version):
 
-def add_or_update_client(dict,server):
-
-    tr_client = server.training_clients.get(dict['client_url'])
+    tr_client = training_clients.get(dict['client_url'])
 
     if tr_client is None:
-        tr_client = TrainingClient(dict['client_url'],server.version)
+        tr_client = TrainingClient(dict['client_url'],version)
 
     tr_client.learning_rate = dict['learning_rate']
     tr_client.epochs = dict['epochs']
@@ -104,30 +85,30 @@ def add_or_update_client(dict,server):
 
     tr_client.workload_rythm = dict['workload_rythm']
 
-    server.training_clients[dict['client_url']] = tr_client
+    training_clients[dict['client_url']] = tr_client
 
-def fill_training_clients(x,server):
+def fill_training_clients(x,training_clients,version):
     for i in range(len(x.json())):
-        add_or_update_client(x.json()[i],server)
+        add_or_update_client(x.json()[i],training_clients,version)
         #print(obj.workload_rythm)
 
-def decide_number_of_images_for_next_round(server, time_window, worst_client_last_round):
+def decide_number_of_images_for_next_round(training_clients, default_training_images,time_window, worst_client_last_round):
 
-    worst_client = list(server.training_clients.values())[0]
+    worst_client = list(training_clients.values())[0]
 
-    for client in server.training_clients.values():
+    for client in training_clients.values():
         if client.get_mean_workload_rythm(time_window) < worst_client.get_mean_workload_rythm(time_window):
             worst_client = client
 
     if worst_client_last_round is not None:
         if worst_client_last_round.client_url != worst_client.client_url: # We do a "reset"
-            for client in server.training_clients.values():
+            for client in training_clients.values():
                 requests.post(url + "/set_epochs_lr_batchsize_training_test_for_client",
                   data={
                       'epochs': 'None',
                       'lr': 'None',
                       'batchsize': 'None',
-                      'training': str(server.training_images),
+                      'training': str(default_training_images),
                       'test': 'None',
                       'clienturl': str(client.client_url)
                     }
@@ -137,7 +118,7 @@ def decide_number_of_images_for_next_round(server, time_window, worst_client_las
                 client.last_jump_sign = +1
 
         else:
-            for client in server.training_clients.values():
+            for client in training_clients.values():
                 if client.client_url != worst_client.client_url:
                     if client.get_last_training_time() < worst_client.get_last_training_time() - 1:
 
@@ -183,20 +164,20 @@ def decide_number_of_images_for_next_round(server, time_window, worst_client_las
                         pass  # If we are between worst client time +1 and -1 we are okay.
     return worst_client
 
-def decide_number_of_epochs_for_next_round(server, time_window, worst_client_last_round):
+def decide_number_of_epochs_for_next_round(training_clients, default_epochs, time_window, worst_client_last_round):
 
-    worst_client = list(server.training_clients.values())[0]
+    worst_client = list(training_clients.values())[0]
 
-    for client in server.training_clients.values():
+    for client in training_clients.values():
         if client.get_mean_workload_rythm(time_window) < worst_client.get_mean_workload_rythm(time_window):
             worst_client = client
 
     if worst_client_last_round is not None:
         if worst_client_last_round.client_url != worst_client.client_url:  # We do a "reset"
-            for client in server.training_clients.values():
+            for client in training_clients.values():
                 requests.post(url + "/set_epochs_lr_batchsize_training_test_for_client",
                               data={
-                                  'epochs': str(server.epochs),
+                                  'epochs': str(default_epochs),
                                   'lr': 'None',
                                   'batchsize': 'None',
                                   'training': 'None',
@@ -210,7 +191,7 @@ def decide_number_of_epochs_for_next_round(server, time_window, worst_client_las
 
         else:
 
-            for client in server.training_clients.values():
+            for client in training_clients.values():
                 if client.client_url != worst_client.client_url:
                     # if client.get_mean_training_time(time_window) < worst_client.get_mean_training_time(time_window):
                     if client.get_last_training_time() < worst_client.get_last_training_time() - 1:
@@ -260,40 +241,48 @@ def decide_number_of_epochs_for_next_round(server, time_window, worst_client_las
 
 def main():
 
-    server = Server()
+    ## PARAMS:
+    training_clients = {}
+    learning_rate = 0.0000001
+    epochs = 10  # 1
+    batch_size = 4
+    training_images = 250  # 500
+    test_images = 50  # 100
+    _round_ = 0
+    version = 2
     worst_client_last_round = None
 
-    requests.post(url + "/set_server_version", data={'version': str(server.version)})
+    requests.post(url + "/set_server_version", data={'version': str(version)})
 
-    while server.round < 5000:
+    while _round_ < 5000:
 
-        server.round = server.round + 1
+        _round_ = _round_ + 1
 
         x = requests.get(url + "/get_training_clients")
-        fill_training_clients(x,server)
+        fill_training_clients(x,training_clients,version)
 
-        if server.round==1:
-            for client in server.training_clients.values():
+        if _round_==1:
+            for client in training_clients.values():
                 requests.post(url + "/set_epochs_lr_batchsize_training_test_for_client",
                               data={
-                                  'epochs': str(server.epochs),
-                                  'lr': str(server.learning_rate),
-                                  'batchsize': str(server.batch_size),
-                                  'training': str(server.training_images),
-                                  'test': str(server.test_images),
+                                  'epochs': str(epochs),
+                                  'lr': str(learning_rate),
+                                  'batchsize': str(batch_size),
+                                  'training': str(training_images),
+                                  'test': str(test_images),
                                   'clienturl': str(client.client_url)
                                 }
                               )
 
-        if server.round > 5: # We start being adaptative once we have some data collected from previous rounds...
-            if server.version==1:
-                worst_client_last_round = decide_number_of_images_for_next_round(server,3, worst_client_last_round)
-            elif server.version==2:
-                worst_client_last_round = decide_number_of_epochs_for_next_round(server,3, worst_client_last_round)
+        if _round_ > 5: # We start being adaptative once we have some data collected from previous rounds...
+            if version==1:
+                worst_client_last_round = decide_number_of_images_for_next_round(training_clients,3, worst_client_last_round)
+            elif version==2:
+                worst_client_last_round = decide_number_of_epochs_for_next_round(training_clients,3, worst_client_last_round)
 
 
         requests.post(url+"/training", json = {'training_type': 'CHEST_X_RAY_PNEUMONIA'}, headers = {"Content-Type": "application/json"})
-        print("Ronda ",server.round," completada.")
+        print("Ronda ",_round_," completada.")
 
         time.sleep(5.0)
 
@@ -302,6 +291,9 @@ def main():
 
 
 main()
+
+
+
 
 
 

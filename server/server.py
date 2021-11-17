@@ -54,11 +54,9 @@ class Server:
             federated_learning_config = None
             if training_type == TrainingType.MNIST:
                 request_body = model_params_to_request_params(training_type, self.mnist_model_params)
-                # federated_learning_config = FederatedLearningConfig(learning_rate=1., epochs=20, batch_size=256)
                 federated_learning_config = FederatedLearningConfig(self.learning_rate, self.epochs, self.batch_size, self.training_images, self.test_images)
             elif training_type == TrainingType.CHEST_X_RAY_PNEUMONIA:
                 request_body = model_params_to_request_params(training_type, self.chest_x_ray_model_params)
-                # federated_learning_config = FederatedLearningConfig(learning_rate=0.0001, epochs=1, batch_size=2)
                 federated_learning_config = FederatedLearningConfig(self.learning_rate, self.epochs, self.batch_size, self.training_images, self.test_images)
 
             request_body['learning_rate'] = federated_learning_config.learning_rate
@@ -120,7 +118,7 @@ class Server:
         training_client.end_training_time.append(time.time())
 
         if self.version ==0:
-            pass # fed learning baseline, does not need to keep rythms
+            pass # fed learning baseline, does not need to collect rythms
         elif self.version==1:
             training_client.add_workload_rythm(self.training_images, self.round, self.version)
         elif self.version==2:
