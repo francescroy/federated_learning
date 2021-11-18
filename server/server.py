@@ -24,14 +24,14 @@ class Server:
         self.init_params()
         self.training_clients = {}
         self.status = ServerStatus.IDLE
-        self.learning_rate = 0.000001
-        self.epochs = 1
-        self.batch_size = 16
-        self.training_images = 200
-        self.test_images = 100
+        self.learning_rate = 0.0001
+        self.epochs = 100
+        self.batch_size = 2
+        self.training_images = 100
+        self.test_images = 50
         self.tempos_rounds = []
         self.round = 0
-        self.version = 2
+        self.version = 0
 
     def init_params(self):
         if self.mnist_model_params is None:

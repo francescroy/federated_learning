@@ -3,8 +3,8 @@ import requests
 import time
 import numpy as np
 
-url = 'http://127.0.0.1:5000' # of the server
-#url = 'http://10.139.40.19:5000' # of the server
+#url = 'http://127.0.0.1:5000' # of the server
+url = 'http://10.139.40.19:5000' # of the server
 
 
 ########################################
@@ -244,12 +244,12 @@ def main():
     ## PARAMS:
     training_clients = {}
     learning_rate = 0.0000001
-    epochs = 10  # 1
+    epochs = 1
     batch_size = 4
-    training_images = 250  # 500
-    test_images = 50  # 100
+    training_images = 500
+    test_images = 100
     _round_ = 0
-    version = 2
+    version = 0
     worst_client_last_round = None
 
     requests.post(url + "/set_server_version", data={'version': str(version)})

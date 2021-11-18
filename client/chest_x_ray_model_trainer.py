@@ -64,16 +64,6 @@ class ChestXRayModelTrainer:
 
         #results_test = model.evaluate(x= valid_batches)
 
-        """
-        #mean_sleep = 10
-        mean_sleep = 30
-
-        sleep_time = np.random.normal(mean_sleep,3)
-        if sleep_time <= (mean_sleep - 10) or sleep_time >= (mean_sleep + 10):
-            sleep_time = mean_sleep
-        time.sleep(sleep_time)
-        """
-
         self.__clean_temp_dataset_folder()
         return model.get_weights(),resutls_train
 
