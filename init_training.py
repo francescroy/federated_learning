@@ -14,9 +14,6 @@ url = 'http://10.139.40.19:5000' # of the server
 class TrainingClient:
     def __init__(self, client_url, version):
         self.client_url = client_url
-        self.status = None
-
-        self.model_params = None
 
         self.learning_rate = None
         self.epochs = None
@@ -58,6 +55,16 @@ class TrainingClient:
 
         return self.end_training_time[-1::][0] - self.init_training_time[-1::][0]
 
+class Server:
+    def __init__(self):
+        self.training_clients = {}
+        self.learning_rate = 0.0000001
+        self.epochs = 1
+        self.batch_size = 8
+        self.training_images = 100
+        self.test_images = 50
+        self.round = 0
+        self.version = 0
 
 
 
@@ -241,48 +248,43 @@ def decide_number_of_epochs_for_next_round(training_clients, default_epochs, tim
 
 def main():
 
-    ## PARAMS:
-    training_clients = {}
-    learning_rate = 0.0000001
-    epochs = 1
-    batch_size = 4
-    training_images = 500
-    test_images = 100
-    _round_ = 0
-    version = 0
+    server = Server()
     worst_client_last_round = None
 
-    requests.post(url + "/set_server_version", data={'version': str(version)})
+    requests.post(url + "/set_server_version", data={'version': str(server.version)})
 
-    while _round_ < 5000:
+    while server.round < 5000:
 
-        _round_ = _round_ + 1
+        server.round = server.round + 1
 
         x = requests.get(url + "/get_training_clients")
-        fill_training_clients(x,training_clients,version)
+        fill_training_clients(x,server.training_clients,server.version)
 
-        if _round_==1:
-            for client in training_clients.values():
+        if server.round==1:
+            for client in server.training_clients.values():
                 requests.post(url + "/set_epochs_lr_batchsize_training_test_for_client",
                               data={
-                                  'epochs': str(epochs),
-                                  'lr': str(learning_rate),
-                                  'batchsize': str(batch_size),
-                                  'training': str(training_images),
-                                  'test': str(test_images),
+                                  'epochs': str(server.epochs),
+                                  'lr': str(server.learning_rate),
+                                  'batchsize': str(server.batch_size),
+                                  'training': str(server.training_images),
+                                  'test': str(server.test_images),
                                   'clienturl': str(client.client_url)
                                 }
                               )
 
-        if _round_ > 5: # We start being adaptative once we have some data collected from previous rounds...
-            if version==1:
-                worst_client_last_round = decide_number_of_images_for_next_round(training_clients,3, worst_client_last_round)
-            elif version==2:
-                worst_client_last_round = decide_number_of_epochs_for_next_round(training_clients,3, worst_client_last_round)
+        if server.round > 5: # We start being adaptative once we have some data collected from previous rounds...
+
+            if server.version==0:
+                pass
+            elif server.version==1:
+                worst_client_last_round = decide_number_of_images_for_next_round(server.training_clients,3, worst_client_last_round)
+            elif server.version==2:
+                worst_client_last_round = decide_number_of_epochs_for_next_round(server.training_clients,3, worst_client_last_round)
 
 
         requests.post(url+"/training", json = {'training_type': 'CHEST_X_RAY_PNEUMONIA'}, headers = {"Content-Type": "application/json"})
-        print("Ronda ",_round_," completada.")
+        print("Ronda ",server.round," completada.")
 
         time.sleep(5.0)
 

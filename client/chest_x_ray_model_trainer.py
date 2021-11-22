@@ -7,7 +7,7 @@ import tempfile
 import time
 import numpy as np
 
-from .config import GLOBAL_TMP_PATH, GLOBAL_DATASETS, INITIAL_MODEL_PATH
+from .config import GLOBAL_TMP_PATH, GLOBAL_DATASETS
 from tensorflow import keras
 from tensorflow.keras.layers import Dense, Flatten, Conv2D, MaxPool2D
 from tensorflow.keras.models import Sequential
