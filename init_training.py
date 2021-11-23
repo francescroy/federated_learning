@@ -2,9 +2,14 @@
 import requests
 import time
 import numpy as np
+import os
+import sys
 
-url = 'http://127.0.0.1:5000' # of the server
-#url = 'http://10.139.40.19:5000' # of the server
+
+url = os.environ['URL'] # of the server, for example 'http://127.0.0.1:5000'
+if url is None:
+    sys.stderr.write("URL environment variable must exist.")
+    exit(1)
 
 
 ########################################
@@ -61,8 +66,8 @@ class Server:
         self.learning_rate = 0.0000001
         self.epochs = 1
         self.batch_size = 8
-        self.training_images = 100
-        self.test_images = 50
+        self.training_images = 500
+        self.test_images = 100
         self.round = 0
         self.version = 0
 
