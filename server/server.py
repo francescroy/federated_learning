@@ -42,8 +42,6 @@ class Server:
     async def start_training(self, training_type):
         if self.status != ServerStatus.IDLE:
             print('Server is not ready for training yet, status:', self.status)
-            for training_client in self.training_clients.values():
-                print(training_client)
         elif len(self.training_clients) == 0:
             print("There aren't any clients registered in the system, nothing to do yet")
         else:

@@ -3,8 +3,8 @@ import requests
 import time
 import numpy as np
 
-#url = 'http://127.0.0.1:5000' # of the server
-url = 'http://10.139.40.19:5000' # of the server
+url = 'http://127.0.0.1:5000' # of the server
+#url = 'http://10.139.40.19:5000' # of the server
 
 
 ########################################
