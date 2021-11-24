@@ -5,6 +5,9 @@ import numpy as np
 import os
 import sys
 
+# useful to print when running through ssh -> 
+#   src https://stackoverflow.com/questions/2336270/output-of-python-scripts-displayed-only-at-termination-when-using-ssh
+sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 1) # line buffering
 
 url = os.environ['URL'] # of the server, for example 'http://127.0.0.1:5000'
 if url is None:
