@@ -16,13 +16,14 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 
 class ChestXRayModelTrainer:
-    def __init__(self, model_params, client_config):
+    def __init__(self, model_params, client_config, seed_for_images):
         print('Initializing ChestXRayModelTrainer...')
         self.client_config = client_config
         self.model_params = model_params
         self.temp_folder = None
         current_directory = os.path.dirname(os.path.realpath(__file__))
         self.chest_x_ray_temp_folder = current_directory + GLOBAL_TMP_PATH + '/chest_xray/'
+        self.seed_for_images = seed_for_images
 
     def train_model(self):
 
@@ -68,6 +69,9 @@ class ChestXRayModelTrainer:
         return model.get_weights(),resutls_train
 
     def __load_datasets(self):
+
+        random.seed(self.seed_for_images)
+
         print('Loading CHEST X-RAY IMAGES dataset...')
         global_dataset_train_path = GLOBAL_DATASETS + '/chest_xray/train'
         global_dataset_valid_path = GLOBAL_DATASETS + '/chest_xray/test'

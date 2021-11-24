@@ -43,3 +43,8 @@ def training():
 @app.errorhandler(404)
 def page_not_found(error):
     return 'This page does not exist', 404
+
+@app.route('/set_seed_for_images', methods=['POST'])
+def set_seed_for_images():
+    client.set_seed_for_images(request.form['seed'])
+    return Response(status=200)

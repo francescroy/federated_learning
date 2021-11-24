@@ -19,6 +19,8 @@ class Client:
         self.status = ClientStatus.IDLE
         self.training_type = None
         self.SERVER_URL = environ.get('SERVER_URL')
+        self.seed_for_images = 23
+
         if self.SERVER_URL is None:
             print('Warning: SERVER_URL environment variable is not defined, using DEFAULT_SERVER_URL:', DEFAULT_SERVER_URL)
             self.SERVER_URL = DEFAULT_SERVER_URL
@@ -38,7 +40,7 @@ class Client:
             if self.training_type == TrainingType.MNIST:
                 client_model_trainer = MnistModelTrainer(model_params, federated_learning_config)
             elif self.training_type == TrainingType.CHEST_X_RAY_PNEUMONIA:
-                client_model_trainer = ChestXRayModelTrainer(model_params, federated_learning_config)
+                client_model_trainer = ChestXRayModelTrainer(model_params, federated_learning_config, self.seed_for_images)
             else:
                 raise ValueError('Unsupported training type', training_type)
 
@@ -100,3 +102,6 @@ class Client:
         except Timeout:
             print('Cannot register client in the central node, the central node is not responding')
         sys.stdout.flush()
+
+    def set_seed_for_images(self, seed):
+        self.seed_for_images = int(seed.strip())
