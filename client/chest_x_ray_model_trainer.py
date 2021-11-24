@@ -70,7 +70,8 @@ class ChestXRayModelTrainer:
 
     def __load_datasets(self):
 
-        random.seed(self.seed_for_images)
+        if self.seed_for_images is not None:
+            random.seed(self.seed_for_images)
 
         print('Loading CHEST X-RAY IMAGES dataset...')
         global_dataset_train_path = GLOBAL_DATASETS + '/chest_xray/train'
