@@ -1,5 +1,6 @@
 import sys
 import requests
+import time
 
 from os import environ
 
@@ -91,17 +92,26 @@ class Client:
     def register(self):
         print('Registering in central node:', self.SERVER_URL)
         request_url = self.SERVER_URL + '/client'
-        try:
-            print('Doing request', request_url)
-            response = requests.post(request_url, data={'client_url': self.client_url}, timeout=5)
-            print('Response received from registration:', response)
-            if response.status_code != 201:
-                print('Cannot register client in the system at', request_url, 'error:', response.reason)
-            else:
-                print('Client registered successfully')
-        except Timeout:
-            print('Cannot register client in the central node, the central node is not responding')
-        sys.stdout.flush()
+
+        connected = 0
+        while connected == 0:
+
+            try:
+                print('Doing request', request_url)
+                response = requests.post(request_url, data={'client_url': self.client_url}, timeout=5)
+                print('Response received from registration:', response)
+                if response.status_code != 201:
+                    print('Cannot register client in the system at', request_url, 'error:', response.reason)
+                else:
+                    print('Client registered successfully')
+                    connected = 1
+            except Timeout:
+                print('Cannot register client in the central node, the central node is not responding')
+            except requests.exceptions.RequestException as e:
+                print('Cannot register client in the central node, the central node is not up')
+                time.sleep(5)
+
+            sys.stdout.flush()
 
     def set_seed_for_images(self, seed):
         self.seed_for_images = int(seed.strip())
