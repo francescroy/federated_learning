@@ -41,7 +41,8 @@ def create_app(test_config=None):
         successfull_training = asyncio.run(server.start_training(training_type))
         if successfull_training is True:
             return Response(status=200)
-        return Response(status=500)
+        else:
+            return Response(status=500)
 
     @app.route('/client', methods=['POST'])
     def register_client():

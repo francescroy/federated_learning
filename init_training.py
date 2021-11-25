@@ -364,9 +364,9 @@ def main():
 
         fill_training_clients(req,server.training_clients,server.version)
 
-        server.round = server.round + 1
 
-        if server.round==1:
+
+        if server.round==0:
             for client in server.training_clients.values():
                 requests.post(client.client_url + "/set_seed_for_images", data={'seed': str(seeds.pop())})
                 requests.post(url + "/set_epochs_lr_batchsize_training_test_for_client",
@@ -390,9 +390,14 @@ def main():
             elif server.version==2:
                 worst_client_last_round = decide_number_of_epochs_for_next_round(server.training_clients,3, worst_client_last_round)
 
+        # todo timeout 600
+        resp = requests.post(url+"/training", json = {'training_type': 'CHEST_X_RAY_PNEUMONIA'}, headers = {"Content-Type": "application/json"})
+        if resp.status == 200:
+            print("Ronda ",server.round," completada.")
+            server.round = server.round + 1
+        else:
+            print("Ronda no completada con exito.")
 
-        requests.post(url+"/training", json = {'training_type': 'CHEST_X_RAY_PNEUMONIA'}, headers = {"Content-Type": "application/json"})
-        print("Ronda ",server.round," completada.")
 
         time.sleep(SLEEP_TIME_BETWEEN_ROUNDS)
 

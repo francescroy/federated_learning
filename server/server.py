@@ -40,7 +40,7 @@ class Server:
             self.mnist_model_params = weights, bias
 
     async def start_training(self, training_type):
-        successfull_training = False
+        successful_training = False
 
         if self.status != ServerStatus.IDLE:
             print('Server is not ready for training yet, status:', self.status)
@@ -74,9 +74,9 @@ class Server:
             print('Requesting training to clients...')
             self.status = ServerStatus.CLIENTS_TRAINING
             await asyncio.gather(*tasks)
-            successfull_training = True
+            successful_training = True
         sys.stdout.flush()
-        return successfull_training
+        return successful_training
 
     def modify_request_body_for_client(self, training_client, request_body):
 
