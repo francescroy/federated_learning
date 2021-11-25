@@ -38,8 +38,8 @@ def create_app(test_config=None):
     def training():
         print('Request POST /training')
         training_type = request.json['training_type']
-        successfull_training = asyncio.run(server.start_training(training_type))
-        if successfull_training is True:
+        successful_training = asyncio.run(server.start_training(training_type))
+        if successful_training is True:
             return Response(status=200)
         else:
             return Response(status=500)

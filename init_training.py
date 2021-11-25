@@ -332,13 +332,7 @@ def server_is_up():
         print("The server is not up")
         return False
 
-def one_client_connected():
-    req = requests.get(url + "/get_training_clients")
-    if len(req.json()) >= 1:
-        return True
-    else:
-        print("No clients connected")
-        return False
+
 
 def main():
 
@@ -350,6 +344,7 @@ def main():
     # Wait at least one client connected to begin the training
     while server_is_up() is not True:
         time.sleep(2)
+    print("Controller connected to the server successfully")
 
     requests.post(url + "/set_server_version", data={'version': str(server.version)})
 
@@ -361,10 +356,10 @@ def main():
             time.sleep(SLEEP_TIME_BETWEEN_ROUNDS)
             print("No clients connected to start this round")
             continue
+        else:
+            print("Trying round")
 
         fill_training_clients(req,server.training_clients,server.version)
-
-
 
         if server.round==0:
             for client in server.training_clients.values():
@@ -392,7 +387,7 @@ def main():
 
         # todo timeout 600
         resp = requests.post(url+"/training", json = {'training_type': 'CHEST_X_RAY_PNEUMONIA'}, headers = {"Content-Type": "application/json"})
-        if resp.status == 200:
+        if resp.status_code == 200:
             print("Ronda ",server.round," completada.")
             server.round = server.round + 1
         else:
