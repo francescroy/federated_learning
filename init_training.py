@@ -14,6 +14,8 @@ if url is None:
     sys.stderr.write("URL environment variable must exist.")
     exit(1)
 
+SLEEP_TIME_BETWEEN_ROUNDS = 5
+NUMBER_OF_ROUNDS = 1000
 
 ########################################
 ########################################
@@ -256,12 +258,14 @@ def decide_number_of_epochs_for_next_round(training_clients, default_epochs, tim
 
 def main():
 
+    seeds = [12,43,2,76,11,15,24,23,19,8]
+
     server = Server()
     worst_client_last_round = None
 
     requests.post(url + "/set_server_version", data={'version': str(server.version)})
 
-    while server.round < 5000:
+    while server.round < NUMBER_OF_ROUNDS:
 
         server.round = server.round + 1
 
@@ -270,6 +274,7 @@ def main():
 
         if server.round==1:
             for client in server.training_clients.values():
+                requests.post(client.client_url + "/set_seed_for_images", data={'seed': str(seeds.pop())})
                 requests.post(url + "/set_epochs_lr_batchsize_training_test_for_client",
                               data={
                                   'epochs': str(server.epochs),
@@ -280,6 +285,7 @@ def main():
                                   'clienturl': str(client.client_url)
                                 }
                               )
+
 
         if server.round > 5: # We start being adaptative once we have some data collected from previous rounds...
 
@@ -294,7 +300,7 @@ def main():
         requests.post(url+"/training", json = {'training_type': 'CHEST_X_RAY_PNEUMONIA'}, headers = {"Content-Type": "application/json"})
         print("Ronda ",server.round," completada.")
 
-        time.sleep(5.0)
+        time.sleep(SLEEP_TIME_BETWEEN_ROUNDS)
 
 
 
