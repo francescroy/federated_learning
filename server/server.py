@@ -97,8 +97,10 @@ class Server:
         request_body = self.modify_request_body_for_client(training_client, copy.deepcopy(request_body))
 
         request_url = training_client.client_url + '/training'
+
+        timeout = aiohttp.ClientTimeout(total=600) # A round will never last more than 600 seconds
         print('Requesting training to client', request_url)
-        async with aiohttp.ClientSession() as session:
+        async with aiohttp.ClientSession(timeout=timeout) as session:
             training_client.status = ClientTrainingStatus.TRAINING_REQUESTED
             async with session.post(request_url, json=request_body) as response:
                 if response.status != 200:
