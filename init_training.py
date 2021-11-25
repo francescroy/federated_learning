@@ -79,6 +79,16 @@ class Server:
 
 
 
+def get_worst_client(training_clients, time_window):
+
+    worst_client = list(training_clients.values())[0]
+
+    for client in training_clients.values():
+        if client.get_mean_workload_rythm(time_window) < worst_client.get_mean_workload_rythm(time_window):
+            worst_client = client
+
+    return worst_client
+
 def add_or_update_client(dict,training_clients,version):
 
     tr_client = training_clients.get(dict['client_url'])
@@ -111,11 +121,7 @@ def fill_training_clients(x,training_clients,version):
 
 def decide_number_of_images_for_next_round(training_clients, default_training_images,time_window, worst_client_last_round):
 
-    worst_client = list(training_clients.values())[0]
-
-    for client in training_clients.values():
-        if client.get_mean_workload_rythm(time_window) < worst_client.get_mean_workload_rythm(time_window):
-            worst_client = client
+    worst_client = get_worst_client(training_clients,time_window)
 
     if worst_client_last_round is not None:
         if worst_client_last_round.client_url != worst_client.client_url: # We do a "reset"
@@ -183,11 +189,7 @@ def decide_number_of_images_for_next_round(training_clients, default_training_im
 
 def decide_number_of_epochs_for_next_round(training_clients, default_epochs, time_window, worst_client_last_round):
 
-    worst_client = list(training_clients.values())[0]
-
-    for client in training_clients.values():
-        if client.get_mean_workload_rythm(time_window) < worst_client.get_mean_workload_rythm(time_window):
-            worst_client = client
+    worst_client = get_worst_client(training_clients,time_window)
 
     if worst_client_last_round is not None:
         if worst_client_last_round.client_url != worst_client.client_url:  # We do a "reset"
@@ -253,8 +255,90 @@ def decide_number_of_epochs_for_next_round(training_clients, default_epochs, tim
 
     return worst_client
 
+def decide_number_of_epochs_for_next_round_version_B(training_clients, default_epochs, time_window, worst_client_last_round):
 
+    worst_client = get_worst_client(training_clients,time_window)
+    #worst_client_time = worst_client.get_last_training_time()
 
+    if worst_client_last_round is not None:
+        if worst_client_last_round.client_url != worst_client.client_url:  # We do a "reset"
+            for client in training_clients.values():
+                requests.post(url + "/set_epochs_lr_batchsize_training_test_for_client",
+                              data={
+                                  'epochs': str(default_epochs),
+                                  'lr': 'None',
+                                  'batchsize': 'None',
+                                  'training': 'None',
+                                  'test': 'None',
+                                  'clienturl': str(client.client_url)
+                                }
+                              )
+
+                client.jumps = [1, 2, 3, 5]
+                client.last_jump_sign = +1
+
+        else:
+
+            for client in training_clients.values():
+                if client.client_url != worst_client.client_url:
+                    # if client.get_mean_training_time(time_window) < worst_client.get_mean_training_time(time_window):
+                    if client.get_last_training_time() < worst_client.get_last_training_time() - 1:
+
+                        if client.last_jump_sign == -1:
+
+                            if len(client.jumps) != 1:
+                                client.jumps.pop()
+
+                        requests.post(url + "/set_epochs_lr_batchsize_training_test_for_client",
+                                      data={
+                                          'epochs': str(client.epochs + client.jumps[len(client.jumps) - 1]),
+                                          'lr': 'None',
+                                          'batchsize': 'None',
+                                          'training': 'None',
+                                          'test': 'None',
+                                          'clienturl': str(client.client_url)
+                                      }
+                                      )
+
+                        client.last_jump_sign = +1
+
+                    elif client.get_last_training_time() > worst_client.get_last_training_time() + 1:
+
+                        if client.last_jump_sign == +1:
+
+                            if len(client.jumps) != 1:
+                                client.jumps.pop()
+
+                        requests.post(url + "/set_epochs_lr_batchsize_training_test_for_client",
+                                      data={
+                                          'epochs': str(client.epochs - client.jumps[len(client.jumps) - 1]),
+                                          'lr': 'None',
+                                          'batchsize': 'None',
+                                          'training': 'None',
+                                          'test': 'None',
+                                          'clienturl': str(client.client_url)
+                                      }
+                                      )
+
+                        client.last_jump_sign = -1
+
+    return worst_client
+
+def server_is_up():
+    try:
+        requests.get(url + "/get_training_clients")
+        return True
+    except requests.exceptions.RequestException as e:
+        print("The server is not up")
+        return False
+
+def one_client_connected():
+    req = requests.get(url + "/get_training_clients")
+    if len(req.json()) >= 1:
+        return True
+    else:
+        print("No clients connected")
+        return False
 
 def main():
 
@@ -263,14 +347,24 @@ def main():
     server = Server()
     worst_client_last_round = None
 
+    # Wait at least one client connected to begin the training
+    while server_is_up() is not True:
+        time.sleep(2)
+
     requests.post(url + "/set_server_version", data={'version': str(server.version)})
 
     while server.round < NUMBER_OF_ROUNDS:
 
-        server.round = server.round + 1
+        req = requests.get(url + "/get_training_clients")
 
-        x = requests.get(url + "/get_training_clients")
-        fill_training_clients(x,server.training_clients,server.version)
+        if len(req.json()) == 0:
+            time.sleep(SLEEP_TIME_BETWEEN_ROUNDS)
+            print("No clients connected to start this round")
+            continue
+
+        fill_training_clients(req,server.training_clients,server.version)
+
+        server.round = server.round + 1
 
         if server.round==1:
             for client in server.training_clients.values():
