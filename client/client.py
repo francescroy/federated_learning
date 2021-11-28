@@ -93,8 +93,8 @@ class Client:
         print('Registering in central node:', self.SERVER_URL)
         request_url = self.SERVER_URL + '/client'
 
-        connected = 0
-        while connected == 0:
+        connected = False
+        while connected == False:
 
             try:
                 print('Doing request', request_url)
@@ -104,7 +104,7 @@ class Client:
                     print('Cannot register client in the system at', request_url, 'error:', response.reason)
                 else:
                     print('Client registered successfully')
-                    connected = 1
+                    connected = True
             except Timeout:
                 print('Cannot register client in the central node, the central node is not responding')
             except requests.exceptions.RequestException as e:

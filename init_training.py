@@ -209,7 +209,6 @@ def decide_number_of_epochs_for_next_round(training_clients, default_epochs, tim
                 client.last_jump_sign = +1
 
         else:
-
             for client in training_clients.values():
                 if client.client_url != worst_client.client_url:
                     # if client.get_mean_training_time(time_window) < worst_client.get_mean_training_time(time_window):
@@ -253,6 +252,8 @@ def decide_number_of_epochs_for_next_round(training_clients, default_epochs, tim
 
                         client.last_jump_sign = -1
 
+                    else:
+                        pass  # If we are between worst client time +1 and -1 we are okay.
     return worst_client
 
 def decide_number_of_epochs_for_next_round_version_B(training_clients, default_epochs, time_window, worst_client_last_round):
@@ -374,7 +375,6 @@ def main():
                                   'clienturl': str(client.client_url)
                                 }
                               )
-
 
         if server.round > 5: # We start being adaptative once we have some data collected from previous rounds...
 
