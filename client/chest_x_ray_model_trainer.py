@@ -70,9 +70,6 @@ class ChestXRayModelTrainer:
 
     def __load_datasets(self):
 
-        if self.seed_for_images is not None:
-            random.seed(self.seed_for_images)
-
         print('Loading CHEST X-RAY IMAGES dataset...')
         global_dataset_train_path = GLOBAL_DATASETS + '/chest_xray/train'
         global_dataset_valid_path = GLOBAL_DATASETS + '/chest_xray/test'
@@ -119,8 +116,13 @@ class ChestXRayModelTrainer:
 
     def __build_training_dataset(self, global_dataset_path, training_dataset_path, classes, samples_size, pattern='*'):
         for a_class in classes:
+
+            if self.seed_for_images is not None:
+                random.seed(self.seed_for_images)
+
             for random_file in random.sample(glob.glob(global_dataset_path + '/' + a_class + '/' + pattern), samples_size):
                 shutil.copy(random_file, training_dataset_path + '/' + a_class)
+
 
 
 #chestXRayModelTrainer = ChestXRayModelTrainer(None, None)
